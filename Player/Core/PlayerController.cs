@@ -46,8 +46,8 @@ public class PlayerController : MonoBehaviour
         float y = Input.GetAxisRaw("Vertical");
         float move = Mathf.Abs(x) + Mathf.Abs(y);
         Vector2 position = transform.position;
-        position.x += x * stats.Speed * Time.deltaTime;
-        position.y += y * stats.Speed * Time.deltaTime;
+        position.x += x * stats.CurrentSpeed * Time.deltaTime;
+        position.y += y * stats.CurrentSpeed * Time.deltaTime;
         transform.position = position;
 
         if(x != 0 || y != 0)
@@ -62,6 +62,6 @@ public class PlayerController : MonoBehaviour
 
         anim.SetFloat("LookX", lastLookX);
         anim.SetFloat("LookY", lastLookY);
-        anim.SetFloat("Speed", move * stats.Speed);
+        anim.SetFloat("Speed", move * stats.CurrentSpeed / stats.Speed);
     }
 }

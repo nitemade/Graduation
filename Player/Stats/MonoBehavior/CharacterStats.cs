@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterStats : MonoBehaviour
 {
     public PlayerData_SO playerData;
-    #region Read From PlayerData_SO
+#region Read From PlayerData_SO
     
     public int MaxHealth
     {
@@ -79,6 +79,21 @@ public class CharacterStats : MonoBehaviour
         {
             if (playerData != null)
                 playerData.speed = value;
+        }
+    }
+
+    public float CurrentSpeed
+    {
+        get
+        {
+            if (playerData != null)
+                return playerData.currentSpeed;
+            return 0;
+        }
+        set
+        {
+            if (playerData != null)
+                playerData.currentSpeed = value;
         }
     }
     #endregion

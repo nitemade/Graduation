@@ -11,4 +11,5 @@ public class PlayerData_SO : ScriptableObject
     public int maxMana;
     public int mana;
     public float speed;
+    public float currentSpeed;
 }
