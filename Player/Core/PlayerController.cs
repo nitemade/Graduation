@@ -5,9 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //获取角色数值
-    public CharacterStats stats;
-    //获取动画控制器
-    private Animator anim;
+    private CharacterStats stats;
+    private CharacterAnimator characterAnimator;
 
     //面朝方向
     private float lastLookX = 0f;
@@ -17,29 +16,19 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         stats = GetComponent<CharacterStats>();
-        anim = GetComponent<Animator>();
-
-        if (stats == null)
-        {
-            Debug.LogError("CharacterStats component not found on Player!");
-        }
+        characterAnimator = GetComponent<CharacterAnimator>();
     }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
     
 
     // Update is called once per frame
     void Update()
     {
+        if (stats.IsDead) return;
         Move();
     }
 
-    //移动函数
+    //移动
     void Move()
     {
         float x = Input.GetAxisRaw("Horizontal");
@@ -50,18 +39,16 @@ public class PlayerController : MonoBehaviour
         position.y += y * stats.CurrentSpeed * Time.deltaTime;
         transform.position = position;
 
-        if(x != 0 || y != 0)
+        if(move > 0)
         {
             lastLookX = x;
             lastLookY = y;
+            stats.SetState(CharacterState.Walk);
+            characterAnimator.FaceDiraction(lastLookX, lastLookY);
         }
-        if(move > 1)
+        else
         {
-            move = Mathf.Sqrt(2) / 2f;
+            stats.SetState(CharacterState.Idle);
         }
-
-        anim.SetFloat("LookX", lastLookX);
-        anim.SetFloat("LookY", lastLookY);
-        anim.SetFloat("Speed", move * stats.CurrentSpeed / stats.Speed);
     }
 }

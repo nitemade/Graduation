@@ -6,10 +6,7 @@ using UnityEngine;
 public class PlayerData_SO : ScriptableObject
 {
     [Header("Stats Info")]
-    public int maxHealth;
-    public int health;
-    public int maxMana;
-    public int mana;
+    public float maxHealth;
+    public float maxMana;
     public float speed;
-    public float currentSpeed;
 }
