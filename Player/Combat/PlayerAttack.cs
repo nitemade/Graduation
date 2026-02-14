@@ -3,19 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackController : MonoBehaviour
+public class PlayerAttack : MonoBehaviour
 {
-    //获取角色数据以及动画控制器
+    //获取角色数据
     private CharacterStats stats;
-    private CharacterAnimator characterAnimator;
+    private AttackController attackController;
+
 
     float attackCooldown;
 
     void Awake()
     {
-        stats = GetComponent<CharacterStats>();
-        characterAnimator = GetComponent<CharacterAnimator>();
+        Init();
     }
+
+    private void Init()
+    {
+        stats = GetComponent<CharacterStats>();
+        attackController = GetComponent<AttackController>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,11 +42,11 @@ public class AttackController : MonoBehaviour
         if (attackCooldown > 0)
         {
             attackCooldown -= Time.deltaTime;
-        }else if (Input.GetMouseButtonDown(0) && stats.currentState != CharacterState.Attack && stats.currentState != CharacterState.Walk)
+        }else if (Input.GetMouseButtonDown(0) && stats.currentState != CharacterState.Attack )
         {
             stats.SetState(CharacterState.Attack);
             attackCooldown = stats.Cooldown;
-           
+            attackController.NormalAttack();
         }
 
        

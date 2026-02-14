@@ -11,10 +11,11 @@ public class AttackData_SO : ScriptableObject
     public float manaCost;             // 主攻击蓝耗
 
     // 2. 攻击判定
-    public float attackRange;       // 主攻击范围（改float）
-    public int attackCount;          // 主攻击段数（初期默认1段）
+    public Vector2 boxSize;          
+    public float normalAttackRange;       // 主攻击范围（改float）
+    public int normalAttackCount;          // 主攻击段数（初期默认1段）
     //TODO:存疑后期更改
-    public float attackSpeed;       // 主攻击速度（倍率，改float）
+    public float normalAttackSpeed;       // 主攻击速度（倍率，改float）
 
 
     //TODO:伤害效果设计

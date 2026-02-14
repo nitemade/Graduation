@@ -15,12 +15,13 @@ public class CharacterRuntimeData
     public float currentSpeed;
 
     //战斗属性
+    public Vector2 boxSize;
     public float normalDamage;
     public float cooldown;
     public float manaCost;
-    public float attackRange;
-    public int attackCount;
-    public float attackSpeed;
+    public float normalAttackRange;
+    public int normalAttackCount;
+    public float normalAttackSpeed;
 
     public CharacterRuntimeData(PlayerData_SO playerData, AttackData_SO attackData)
     {
@@ -29,11 +30,13 @@ public class CharacterRuntimeData
         speed = playerData.speed;
         
         currentSpeed = speed;
+
+        boxSize = attackData.boxSize;
         normalDamage = attackData.normalDamge;
         cooldown = attackData.cooldown;
         manaCost = attackData.manaCost;
-        attackRange = attackData.attackRange;
-        attackCount = attackData.attackCount;
+        normalAttackRange = attackData.normalAttackRange;
+        normalAttackCount = attackData.normalAttackCount;
 
         //初始化
         currentHealth = maxHealth;

@@ -11,10 +11,21 @@ public class CharacterAnimator : MonoBehaviour
 
     private void Awake()
     {
+        Init();
+    }
+
+    private void Init()
+    {
         anim = GetComponent<Animator>();
         stats = GetComponent<CharacterStats>();
 
         stats.OnStateChange += HandleStateChange;
+    }
+
+    private void Start()
+    {
+        anim.SetFloat("LookX", 0f);
+        anim.SetFloat("LookY", -1f);
     }
     //ÉèÖÃ³¯Ïò
     public void FaceDiraction(float x,float y)  
@@ -45,7 +56,7 @@ public class CharacterAnimator : MonoBehaviour
     #region ÒÆ¶¯ 
     private void Move()
     {
-        anim.SetBool("IsNormalAttack", false);
+        anim.SetBool("Walk",true);
         anim.SetFloat("Speed", stats.CurrentSpeed / stats.Speed);
     }
     #endregion
@@ -53,13 +64,14 @@ public class CharacterAnimator : MonoBehaviour
     #region ¹¥»÷
     private void Attack()
     {
-        anim.SetBool("IsNormalAttack",true);
+        anim.SetBool("Walk", false);
+        anim.SetTrigger("IsNormalAttack");
     }
 
 
     public void OnAttackEnd()
     {
-        anim.SetBool("IsNormalAttack", false);
+        anim.SetBool("Walk",true);
         stats.SetState(CharacterState.Idle);
     }
     #endregion

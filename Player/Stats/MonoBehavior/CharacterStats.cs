@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterStats : MonoBehaviour
+public class CharacterStats : MonoBehaviour,IAttackable
 {
     public PlayerData_SO playerData;
     public AttackData_SO attackData;
@@ -18,13 +18,15 @@ public class CharacterStats : MonoBehaviour
     public float CurrentMana => runtimeData.currentMana;
     public float Speed => runtimeData.speed;
     public float CurrentSpeed => runtimeData.currentSpeed;
-    public float NormalDamage => runtimeData.normalDamage;
-        
+
+
+    public Vector2 boxSize => runtimeData.boxSize;
+    public float NormalDamage => runtimeData.normalDamage;        
     public float Cooldown => runtimeData.cooldown;
     public float ManaCost => runtimeData.manaCost;
-    public float AttackRange => runtimeData.attackRange;
-    public int AttackCount => runtimeData.attackCount;
-    public float AttackSpeed => runtimeData.attackSpeed;
+    public float normalAttackRange => runtimeData.normalAttackRange;
+    public int normalAttackCount => runtimeData.normalAttackCount;
+    public float normalAttackSpeed => runtimeData.normalAttackSpeed;
 
     #endregion
 
@@ -45,6 +47,8 @@ public class CharacterStats : MonoBehaviour
 
         runtimeData.currentHealth -= damage;
         runtimeData.currentHealth = Mathf.Clamp(runtimeData.currentHealth, 0, runtimeData.maxHealth);
+        //TODO:测试待删除
+        Debug.Log("被击中"+ runtimeData.currentHealth);
         //TODO: 可触发事件
         if (runtimeData.currentHealth <= 0)
         { 
