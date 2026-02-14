@@ -22,6 +22,7 @@ public class AttackController : MonoBehaviour
         lastMoveDir.x = anim.GetFloat("LookX");
         lastMoveDir.y = anim.GetFloat("LookY");
         Vector2 attackPos = (Vector2)transform.position + lastMoveDir * stats.normalAttackRange;
+        attackPos.y += 0.5f;
         float angle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
 
         Collider2D[] hits = Physics2D.OverlapBoxAll(
@@ -40,6 +41,33 @@ public class AttackController : MonoBehaviour
             }
         }
 
+    }
+    //TODO:攻击范围检测，后期记得删
+    private void OnDrawGizmosSelected()
+    {
+        if (stats == null) return;
+
+        Gizmos.color = Color.red;
+
+        // 获取方向（和攻击逻辑一致）
+        Vector2 dir = lastMoveDir;
+
+        if (dir == Vector2.zero)
+            dir = Vector2.down;   // 默认朝下
+
+        Vector2 attackPos = (Vector2)transform.position + dir * stats.normalAttackRange;
+        attackPos.y += 0.5f;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        // 旋转矩阵
+        Matrix4x4 rotationMatrix =
+            Matrix4x4.TRS(attackPos, Quaternion.Euler(0, 0, angle), Vector3.one);
+
+        Gizmos.matrix = rotationMatrix;
+
+        Gizmos.DrawWireCube(Vector3.zero, stats.boxSize);
+
+        Gizmos.matrix = Matrix4x4.identity;
     }
 
 }

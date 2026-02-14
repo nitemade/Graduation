@@ -47,8 +47,6 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
         runtimeData.currentHealth -= damage;
         runtimeData.currentHealth = Mathf.Clamp(runtimeData.currentHealth, 0, runtimeData.maxHealth);
-        //TODO:测试待删除
-        Debug.Log("被击中"+ runtimeData.currentHealth);
         //TODO: 可触发事件
         if (runtimeData.currentHealth <= 0)
         { 
