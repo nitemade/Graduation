@@ -3,10 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterStats))]
+[RequireComponent(typeof(CombatController))]
+[RequireComponent(typeof(Animator))]
 public class CharacterAnimator : MonoBehaviour
 {
     private Animator anim;
     private CharacterStats stats;
+    private CombatController combatController;
 
 
     private void Awake()
@@ -18,67 +22,64 @@ public class CharacterAnimator : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         stats = GetComponent<CharacterStats>();
+        combatController = GetComponent<CombatController>();
 
-        stats.OnStateChange += HandleStateChange;
+
     }
+
 
     private void Start()
     {
         anim.SetFloat("LookX", 0f);
         anim.SetFloat("LookY", -1f);
     }
-    //设置朝向
-    public void FaceDiraction(float x,float y)  
-    {
-        anim.SetFloat("LookX", x);
-        anim.SetFloat("LookY", y);
-    }
-    //状态切换
-    private void HandleStateChange(CharacterState state)
-    {
-       //todo:完成动画切换
-        switch (state)
-        {
-            case CharacterState.Idle:
-                anim.SetFloat("Speed", 0f);
-                break;
-            case CharacterState.Walk:
-                Move();
-                break;
-            case CharacterState.Attack:
-                Attack();
-                break;
-        }
-    }
 
     
 
     #region 移动 
-    private void Move()
+    public void Move(float x, float y,float speed)
     {
-        anim.SetBool("Walk",true);
-        anim.SetFloat("Speed", stats.CurrentSpeed / stats.Speed);
+        anim.SetFloat("LookX", x);
+        anim.SetFloat("LookY", y);
+        anim.SetFloat("Speed", speed);
+    }
+
+    public void StopMove()
+    {
+        anim.SetFloat("Speed", 0f);
     }
     #endregion
 
-    #region 攻击
-    private void Attack()
+    #region 战斗相关 
+    public void Attack()
     {
-        anim.SetBool("Walk", false);
         anim.SetTrigger("IsNormalAttack");
     }
 
+    public void OnBeHit()
+    {
+        anim.SetTrigger("BeHit");
+    }
 
     public void OnAttackEnd()
     {
-        anim.SetBool("Walk",true);
+        anim.SetTrigger("Walk");
         stats.SetState(CharacterState.Idle);
+    }
+
+
+    //动画事件回调
+    public void OnAttackHitFrame()
+    {
+        combatController.PerformAttack();
     }
     #endregion
 
-    private void OnDestroy()
+
+
+    //TODO:死亡动画待制作
+    internal void OnDead()
     {
-        if(stats!= null)
-            stats.OnStateChange -= HandleStateChange;
+        Debug.Log("OnDead");
     }
 }

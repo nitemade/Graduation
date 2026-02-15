@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterStats))]
 public class AttackController : MonoBehaviour
 {
     private CharacterStats stats;
@@ -21,13 +22,13 @@ public class AttackController : MonoBehaviour
     {
         lastMoveDir.x = anim.GetFloat("LookX");
         lastMoveDir.y = anim.GetFloat("LookY");
-        Vector2 attackPos = (Vector2)transform.position + lastMoveDir * stats.normalAttackRange;
+        Vector2 attackPos = (Vector2)transform.position + lastMoveDir * stats.NormalAttackRange;
         attackPos.y += 0.5f;
         float angle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
 
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             attackPos,
-            stats.boxSize,
+            stats.BoxSize,
             angle,
             targetLayer
             );
@@ -55,7 +56,7 @@ public class AttackController : MonoBehaviour
         if (dir == Vector2.zero)
             dir = Vector2.down;   // Ä¬ÈÏ³¯ÏÂ
 
-        Vector2 attackPos = (Vector2)transform.position + dir * stats.normalAttackRange;
+        Vector2 attackPos = (Vector2)transform.position + dir * stats.NormalAttackRange;
         attackPos.y += 0.5f;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
@@ -65,7 +66,7 @@ public class AttackController : MonoBehaviour
 
         Gizmos.matrix = rotationMatrix;
 
-        Gizmos.DrawWireCube(Vector3.zero, stats.boxSize);
+        Gizmos.DrawWireCube(Vector3.zero, stats.BoxSize);
 
         Gizmos.matrix = Matrix4x4.identity;
     }

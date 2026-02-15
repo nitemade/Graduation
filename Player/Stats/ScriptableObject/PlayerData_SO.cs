@@ -9,4 +9,5 @@ public class PlayerData_SO : ScriptableObject
     public float maxHealth;
     public float maxMana;
     public float speed;
+    public float defense;
 }

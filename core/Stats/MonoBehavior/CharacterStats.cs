@@ -18,18 +18,27 @@ public class CharacterStats : MonoBehaviour,IAttackable
     public float CurrentMana => runtimeData.currentMana;
     public float Speed => runtimeData.speed;
     public float CurrentSpeed => runtimeData.currentSpeed;
+    public float Defense => runtimeData.defense;
 
 
-    public Vector2 boxSize => runtimeData.boxSize;
+    public Vector2 BoxSize => runtimeData.boxSize;
     public float NormalDamage => runtimeData.normalDamage;        
     public float Cooldown => runtimeData.cooldown;
     public float ManaCost => runtimeData.manaCost;
-    public float normalAttackRange => runtimeData.normalAttackRange;
-    public int normalAttackCount => runtimeData.normalAttackCount;
-    public float normalAttackSpeed => runtimeData.normalAttackSpeed;
+    public float NormalAttackRange => runtimeData.normalAttackRange;
+    public int NormalAttackCount => runtimeData.normalAttackCount;
+    public float NormalAttackSpeed => runtimeData.normalAttackSpeed;
 
     #endregion
 
+    #region 事件
+    public event Action<CharacterState> OnStateChange;
+    public event Action<float> OnDamage;
+    public event Action OnDead;
+
+    #endregion
+
+    #region 初始化
     private void Awake()
     {
         Init();
@@ -39,18 +48,26 @@ public class CharacterStats : MonoBehaviour,IAttackable
     {
         runtimeData = new CharacterRuntimeData(playerData, attackData);
     }
+    #endregion
 
     #region 属性修改
+
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
+        float finalDamage = MathF.Max(damage - runtimeData.defense, 1f);
 
-        runtimeData.currentHealth -= damage;
+        
+        runtimeData.currentHealth -= finalDamage;
         runtimeData.currentHealth = Mathf.Clamp(runtimeData.currentHealth, 0, runtimeData.maxHealth);
         //TODO: 可触发事件
+
+        OnDamage?.Invoke(finalDamage);
+
         if (runtimeData.currentHealth <= 0)
         { 
             SetState(CharacterState.Dead); 
+            OnDead?.Invoke();
         }
     }
 
@@ -77,8 +94,9 @@ public class CharacterStats : MonoBehaviour,IAttackable
     #endregion
 
     #region 状态
-    public CharacterState currentState = CharacterState.Idle;
-    public event System.Action<CharacterState> OnStateChange;
+    private CharacterState currentState = CharacterState.Idle;
+    public CharacterState CurrentState => currentState;
+    
 
 
 

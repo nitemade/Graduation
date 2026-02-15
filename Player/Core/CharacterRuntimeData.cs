@@ -22,12 +22,15 @@ public class CharacterRuntimeData
     public float normalAttackRange;
     public int normalAttackCount;
     public float normalAttackSpeed;
+    public float defense;
 
     public CharacterRuntimeData(PlayerData_SO playerData, AttackData_SO attackData)
     {
         maxHealth = playerData.maxHealth;
         maxMana = playerData.maxMana;
         speed = playerData.speed;
+        defense = playerData.defense;
+        
         
         currentSpeed = speed;
 

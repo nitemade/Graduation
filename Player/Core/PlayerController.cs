@@ -2,21 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(MoveController))]
+[RequireComponent(typeof(CharacterStats))]
 public class PlayerController : MonoBehaviour
 {
-    //获取角色数值
+    private MoveController moveController;
     private CharacterStats stats;
-    private CharacterAnimator characterAnimator;
 
-    //面朝方向
-    private float lastLookX = 0f;
-    private float lastLookY = 0f;
 
 
     private void Awake()
     {
+        moveController = GetComponent<MoveController>();
         stats = GetComponent<CharacterStats>();
-        characterAnimator = GetComponent<CharacterAnimator>();
     }
 
     
@@ -25,30 +23,13 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (stats.IsDead) return;
-        Move();
+        MoveInput();
     }
 
     //移动
-    void Move()
+    void MoveInput()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float y = Input.GetAxisRaw("Vertical");
-        float move = Mathf.Abs(x) + Mathf.Abs(y);
-        Vector2 position = transform.position;
-        position.x += x * stats.CurrentSpeed * Time.deltaTime;
-        position.y += y * stats.CurrentSpeed * Time.deltaTime;
-        transform.position = position;
-
-        if(move > 0)
-        {
-            lastLookX = x;
-            lastLookY = y;
-            stats.SetState(CharacterState.Walk);
-            characterAnimator.FaceDiraction(lastLookX, lastLookY);
-        }
-        else
-        {
-            stats.SetState(CharacterState.Idle);
-        }
+        Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        moveController.SetInput(input);
     }
 }

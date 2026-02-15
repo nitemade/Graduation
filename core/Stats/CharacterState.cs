@@ -7,5 +7,6 @@ public enum CharacterState
     Idle,
     Walk,
     Attack,
-    Dead
+    Dead,
+    BeHit
 }
