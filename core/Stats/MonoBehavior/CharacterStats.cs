@@ -10,16 +10,21 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     private CharacterRuntimeData runtimeData;
 
+    #region 当前状态（可序列化存档）
+    [SerializeField] private float currentHealth;
+    [SerializeField] private float currentMana;
+    [SerializeField] private float currentSpeed;
+    #endregion
+
     #region 属性
 
     public float MaxHealth => runtimeData.maxHealth;
-    public float CurrentHealth => runtimeData.currentHealth;
     public float MaxMana => runtimeData.maxMana;
-    public float CurrentMana => runtimeData.currentMana;
     public float Speed => runtimeData.speed;
-    public float CurrentSpeed => runtimeData.currentSpeed;
     public float Defense => runtimeData.defense;
-
+    public float CurrentHealth => currentHealth;
+    public float CurrentMana => currentMana;
+    public float CurrentSpeed => currentSpeed;
 
     public Vector2 BoxSize => runtimeData.boxSize;
     public float NormalDamage => runtimeData.normalDamage;        
@@ -47,10 +52,19 @@ public class CharacterStats : MonoBehaviour,IAttackable
     private void Init()
     {
         runtimeData = new CharacterRuntimeData(playerData, attackData);
+        currentHealth = runtimeData.maxHealth;
+        currentMana = runtimeData.maxMana;
+        currentSpeed = runtimeData.speed;
     }
     #endregion
 
     #region 属性修改
+
+    private void ChangeHealth(float delta)
+    {
+        currentHealth += delta;
+        currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth);
+    }
 
     public void TakeDamage(float damage)
     {
@@ -58,13 +72,12 @@ public class CharacterStats : MonoBehaviour,IAttackable
         float finalDamage = MathF.Max(damage - runtimeData.defense, 1f);
 
         
-        runtimeData.currentHealth -= finalDamage;
-        runtimeData.currentHealth = Mathf.Clamp(runtimeData.currentHealth, 0, runtimeData.maxHealth);
+        ChangeHealth(-finalDamage);
         //TODO: 可触发事件
 
         OnDamage?.Invoke(finalDamage);
 
-        if (runtimeData.currentHealth <= 0)
+        if (currentHealth <= 0)
         { 
             SetState(CharacterState.Dead); 
             OnDead?.Invoke();
@@ -73,16 +86,15 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     public void Heal(float heal)
     {
-        runtimeData.currentHealth += heal;
-        runtimeData.currentHealth = Mathf.Clamp(runtimeData.currentHealth, 0, runtimeData.maxHealth);
+        ChangeHealth(heal);
         //TODO: 可触发事件
     }
 
     public bool UseMana(float cost)
     {
-        if (runtimeData.currentMana >= cost)
+        if (currentMana >= cost)
         {
-            runtimeData.currentMana -= cost;
+            currentMana -= cost;
             return true;
         }
         return false;

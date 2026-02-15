@@ -6,7 +6,7 @@ using UnityEngine;
 public class AttackData_SO : ScriptableObject
 {
     [Header("Attack Info")]
-    public float normalDamge;      // 主攻击基础伤害（改float支持小数）
+    public float normalDamage;      // 主攻击基础伤害（改float支持小数）
     public float cooldown;          // 主攻击冷却（秒，改float更灵活）
     public float manaCost;             // 主攻击蓝耗
 
