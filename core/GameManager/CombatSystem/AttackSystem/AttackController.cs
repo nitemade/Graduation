@@ -23,7 +23,7 @@ public class AttackController : MonoBehaviour
         lastMoveDir.x = anim.GetFloat("LookX");
         lastMoveDir.y = anim.GetFloat("LookY");
         Vector2 attackPos = (Vector2)transform.position + lastMoveDir * stats.NormalAttackRange;
-        attackPos.y += 0.5f;
+        attackPos.y += 0.2f;
         float angle = Mathf.Atan2(lastMoveDir.y, lastMoveDir.x) * Mathf.Rad2Deg;
 
         Collider2D[] hits = Physics2D.OverlapBoxAll(
@@ -57,7 +57,7 @@ public class AttackController : MonoBehaviour
             dir = Vector2.down;   // Ä¬ÈÏ³¯ÏÂ
 
         Vector2 attackPos = (Vector2)transform.position + dir * stats.NormalAttackRange;
-        attackPos.y += 0.5f;
+        attackPos.y += 0.2f;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
         // Ðý×ª¾ØÕó

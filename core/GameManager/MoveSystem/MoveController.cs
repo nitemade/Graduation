@@ -13,6 +13,7 @@ public class MoveController : MonoBehaviour
     private CharacterStats stats;
     private CombatController combat;
     private CharacterAnimator animator;
+    private SpriteRenderer sr;
 
     private Vector2 moveDir;
     private void Awake()
@@ -21,6 +22,7 @@ public class MoveController : MonoBehaviour
         stats = GetComponent<CharacterStats>();
         combat = GetComponent<CombatController>();
         animator = GetComponent<CharacterAnimator>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
     private void FixedUpdate()
@@ -43,7 +45,9 @@ public class MoveController : MonoBehaviour
 
         if(moveDir != Vector2.zero)
         {
-            animator.Move(moveDir.x, moveDir.y,stats.CurrentSpeed/stats.Speed);
+            if(moveDir.x != 0)
+                sr.flipX = moveDir.x < 0;
+            animator.Move(moveDir.x, moveDir.y,stats.CurrentSpeed);
         }
         else
         {

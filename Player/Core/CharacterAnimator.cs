@@ -61,6 +61,9 @@ public class CharacterAnimator : MonoBehaviour
         anim.SetTrigger("BeHit");
     }
 
+    #endregion
+
+    #region 动画事件回调
     public void OnAttackEnd()
     {
         anim.SetTrigger("Walk");
@@ -68,7 +71,7 @@ public class CharacterAnimator : MonoBehaviour
     }
 
 
-    //动画事件回调
+    
     public void OnAttackHitFrame()
     {
         combatController.PerformAttack();
