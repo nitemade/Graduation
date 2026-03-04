@@ -11,6 +11,7 @@ public class CharacterAnimator : MonoBehaviour
     private Animator anim;
     private CharacterStats stats;
     private CombatController combatController;
+    private AIStateMachine AIStateMachine;
 
 
     private void Awake()
@@ -23,7 +24,7 @@ public class CharacterAnimator : MonoBehaviour
         anim = GetComponent<Animator>();
         stats = GetComponent<CharacterStats>();
         combatController = GetComponent<CombatController>();
-
+        AIStateMachine = GetComponent<AIStateMachine>();
 
     }
 
@@ -68,6 +69,10 @@ public class CharacterAnimator : MonoBehaviour
     {
         anim.SetTrigger("Walk");
         stats.SetState(CharacterState.Idle);
+        if (AIStateMachine != null)
+        {
+            AIStateMachine.OnAttackEnd();
+        }
     }
 
 

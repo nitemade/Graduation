@@ -8,7 +8,6 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     //获取角色数据
-    private CharacterStats stats;
     private CombatController combatController;
 
 
@@ -19,7 +18,6 @@ public class PlayerAttack : MonoBehaviour
 
     private void Init()
     {
-        stats = GetComponent<CharacterStats>();
         combatController = GetComponent<CombatController>();
     }
 
