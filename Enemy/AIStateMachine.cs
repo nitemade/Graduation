@@ -17,7 +17,6 @@ public class AIStateMachine : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
 
     private Transform currentTarget = null;
-    private bool isAttacking = false;
 
     private void Awake()
     {
@@ -32,6 +31,7 @@ public class AIStateMachine : MonoBehaviour
     {
         if (stats.IsDead)
         {
+            stats.SetState(CharacterState.Dead);
             moveController.StopMove();
             return;
         }
@@ -40,24 +40,29 @@ public class AIStateMachine : MonoBehaviour
 
         if (currentTarget == null)
         {
+            stats.SetState(CharacterState.Idle);
             moveController.StopMove();
             return;
         }
 
         float distance = Vector2.Distance(transform.position, currentTarget.position);
 
-        if (isAttacking)
+        if (stats.CurrentState == CharacterState.Attack)
+        {
             return;
+        }
 
         if (distance > stats.NormalAttackRange)
         {
+            stats.SetState(CharacterState.Walk);
             moveController.SetTarget(currentTarget);
         }
         else
         {
-            isAttacking = true;
-            combatController.RequestAttack();
-            moveController.StopMove();
+            if (combatController.RequestAttack())
+            {
+                moveController.StopMove();
+            }
         }
 
     }
@@ -78,11 +83,5 @@ public class AIStateMachine : MonoBehaviour
         {
             currentTarget = null;
         }
-    }
-
-    internal void OnAttackEnd()
-    {
-        moveController.StartMove();
-        isAttacking = false;
     }
 }

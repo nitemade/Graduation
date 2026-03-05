@@ -28,7 +28,6 @@ public class EnemyMoveController : MonoBehaviour
     #region Runtime
     private int currentWaypoint;
     private float repathTimer = 0f;
-    private bool isMoving;
     #endregion
 
     #region Unity
@@ -47,7 +46,7 @@ public class EnemyMoveController : MonoBehaviour
 
     private void Update()
     {
-        if (!isMoving || target == null)
+        if (stats.CurrentState != CharacterState.Walk || target == null)
             return;
 
         HandleRepath();
@@ -66,7 +65,6 @@ public class EnemyMoveController : MonoBehaviour
         if (target == newTarget)
             return;
         target = newTarget;
-        isMoving = true;
         ForceRepath();
     }
 
@@ -75,14 +73,10 @@ public class EnemyMoveController : MonoBehaviour
     /// </summary>
     public void StopMove()
     {
-        isMoving = false;
+        moveController.SetInput(Vector2.zero);
         path = null;
     }
 
-    public void StartMove()
-    {
-        isMoving = true;
-    }
 
     #endregion
 
@@ -108,6 +102,7 @@ public class EnemyMoveController : MonoBehaviour
 
         if (distance < stopDistance)
         {
+            moveController.SetInput(Vector2.zero);
             return;
         }
 
@@ -129,7 +124,10 @@ public class EnemyMoveController : MonoBehaviour
     private void MoveAlongPath()
     {
         if (path == null || currentWaypoint >= path.vectorPath.Count)
-            return;
+        {
+            moveController.SetInput(Vector2.zero);
+            return; 
+        }
 
         float distanceToTarget = Vector2.Distance(transform.position, target.position);
 

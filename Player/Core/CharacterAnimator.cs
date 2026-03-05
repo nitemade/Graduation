@@ -64,15 +64,11 @@ public class CharacterAnimator : MonoBehaviour
 
     #endregion
 
-    #region 动画事件回调
+    #region 动画事件调用
     public void OnAttackEnd()
     {
         anim.SetTrigger("Walk");
         stats.SetState(CharacterState.Idle);
-        if (AIStateMachine != null)
-        {
-            AIStateMachine.OnAttackEnd();
-        }
     }
 
 
@@ -81,6 +77,12 @@ public class CharacterAnimator : MonoBehaviour
     {
         combatController.PerformAttack();
     }
+
+
+    public void OnDeath()
+    {
+        Destroy(gameObject);
+    }
     #endregion
 
 
@@ -88,6 +90,6 @@ public class CharacterAnimator : MonoBehaviour
     //TODO:死亡动画待制作
     internal void OnDead()
     {
-        Debug.Log("OnDead");
+        anim.SetTrigger("IsDead");
     }
 }

@@ -45,7 +45,21 @@ public class CombatController : MonoBehaviour
     private void HandleDeath()
     {
         stats.SetState(CharacterState.Dead);
+
+        StopAllCoroutines();
+        
+        DisableCollider();
+        
         animator.OnDead();
+
+        
+    }
+
+    private void DisableCollider()
+    {
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
     }
     #endregion
     #region ÊÜ»÷Âß¼­
@@ -74,9 +88,6 @@ public class CombatController : MonoBehaviour
         isStunned = true;
         yield return new WaitForSeconds(duration);
         isStunned = false;
-
-        if (!stats.IsDead)
-            stats.SetState(CharacterState.Idle);
     }
 
     private void StartInvincible(float duration)
@@ -96,14 +107,15 @@ public class CombatController : MonoBehaviour
 
 
     #region ÆÕÍ¨¹¥»÷Âß¼­
-    public void RequestAttack()
+    public bool RequestAttack()
     {
-        if (!CanAttack()) return;
+        if (!CanAttack()) return false;
 
         stats.SetState(CharacterState.Attack);
         animator.Attack();
 
         attackCooldown = stats.Cooldown;
+        return true;
     }
 
     public bool CanAttack()
