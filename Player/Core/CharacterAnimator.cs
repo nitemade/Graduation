@@ -81,13 +81,12 @@ public class CharacterAnimator : MonoBehaviour
 
     public void OnDeath()
     {
-        Destroy(gameObject);
+        Destroy(gameObject,2f);
     }
     #endregion
 
 
 
-    //TODO:ËÀÍö¶¯»­´ýÖÆ×÷
     internal void OnDead()
     {
         anim.SetTrigger("IsDead");

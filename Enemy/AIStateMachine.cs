@@ -11,6 +11,7 @@ public class AIStateMachine : MonoBehaviour
     private EnemyMoveController moveController;
     private CharacterStats stats;
     private CombatController combatController;
+    private Room room;
 
 
     [SerializeField]private float detectRange = 5f;
@@ -24,15 +25,20 @@ public class AIStateMachine : MonoBehaviour
         combatController = GetComponent<CombatController>();
         stats = GetComponent<CharacterStats>();
     }
-
+    public void Init(Room roomContext)
+    {
+        room = roomContext; 
+    }
 
     // Update is called once per frame
     void Update()
     {
         if (stats.IsDead)
         {
-            stats.SetState(CharacterState.Dead);
+            room.EnemyDead();
             moveController.StopMove();
+            stats.SetState(CharacterState.Dead);
+            enabled = false;
             return;
         }
 
@@ -84,4 +90,6 @@ public class AIStateMachine : MonoBehaviour
             currentTarget = null;
         }
     }
+
+
 }
