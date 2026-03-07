@@ -13,6 +13,7 @@ public class DungeonGenerator : MonoBehaviour
     BSPNode root;
 
     List<BSPNode> leaves = new List<BSPNode>();
+    List<Edge> edges = new List<Edge>();
 
     private void Start()
     {
@@ -34,6 +35,7 @@ public class DungeonGenerator : MonoBehaviour
 
     private void CreateRooms()
     {
+        List<RectInt> roomList = new List<RectInt>();
         foreach (var leaf in leaves)
         {
             int padding = 2;
@@ -54,9 +56,16 @@ public class DungeonGenerator : MonoBehaviour
                 leaf.rect.y + leaf.rect.height - roomHeight - 1);
 
             leaf.room = new RectInt(roomx, roomy, roomWidth, roomHeight);
+            roomList.Add(leaf.room);
         }
+
+        edges = GenerateMST(roomList);
     }
 
+    /// <summary>
+    /// 二叉空间分割（BSP树）
+    /// </summary>
+    /// <param name="node"></param>
     private void SplitNode(BSPNode node)
     {
         if (node.rect.width < minLeafSize *2 && node.rect.height < minLeafSize * 2)
@@ -147,6 +156,7 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (var leaf in leaves)
         {
+            //绘制空间
             Gizmos.color = Color.green;
             RectInt r = leaf.rect;
 
@@ -160,6 +170,8 @@ public class DungeonGenerator : MonoBehaviour
 
             Gizmos.DrawWireCube(pos, size);
 
+
+            //绘制房间
             RectInt room = leaf.room;
 
             Gizmos.color = Color.yellow;
@@ -171,6 +183,72 @@ public class DungeonGenerator : MonoBehaviour
             Vector3 roomsize = new Vector3(room.width, room.height, 1);
 
             Gizmos.DrawWireCube(roomPos, roomsize);
+
         }
+
+        //绘制边
+        Gizmos.color = Color.red;
+
+        foreach (var edge in edges)
+        {
+            Gizmos.DrawLine(
+                new Vector3(edge.a.x, edge.a.y, 0),
+                new Vector3(edge.b.x, edge.b.y, 0));
+        }
+    }
+
+    Vector2Int GetRoomCenter(RectInt room)
+    {
+        return new Vector2Int(
+            room.x + room.width / 2,
+            room.y + room.height / 2);
+    }
+
+
+    /// <summary>
+    /// 生成最小生成树(Prim)
+    /// </summary>
+    /// <param name="rooms"></param>
+    /// <returns></returns>
+    List<Edge> GenerateMST(List<RectInt> rooms)
+    {
+        List<Edge> mst = new List<Edge>();
+
+        List<Vector2Int>  notes = new List<Vector2Int>();
+
+        foreach (var room in rooms)
+        {
+            notes.Add(GetRoomCenter(room));
+        }
+
+        List<Vector2Int> connected = new List<Vector2Int>();
+        List<Vector2Int> remaining = new List<Vector2Int>(notes);
+
+        connected.Add(remaining[0]);
+        remaining.RemoveAt(0);
+
+        while(remaining.Count > 0)
+        {
+            Edge shortest = null;
+
+            foreach (var c in connected)
+            {
+                foreach (var r in remaining)
+                {
+                    Edge e = new Edge(c, r);
+                    if (shortest == null || shortest.distance > e.distance)
+                    {
+                        shortest = e;
+                    }
+                }
+            }
+
+            mst.Add(shortest);
+
+            connected.Add(shortest.b);
+            remaining.Remove(shortest.b);
+        }
+
+        return mst;
     }
 }
