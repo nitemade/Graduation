@@ -14,6 +14,7 @@ public class DungeonGenerator : MonoBehaviour
 
     List<BSPNode> leaves = new List<BSPNode>();
     List<Edge> edges = new List<Edge>();
+    List<Vector2Int> corridors = new List<Vector2Int>();
 
     private void Start()
     {
@@ -30,12 +31,21 @@ public class DungeonGenerator : MonoBehaviour
 
         CreateRooms();
 
+        List<RectInt> roomList = new List<RectInt>();
+
+        foreach (var leaf in leaves)
+        {
+            roomList.Add(leaf.room);
+        }
+
+        edges = GenerateMST(roomList);
+
+        CreateCorridors();
         Debug.Log("Leaf count:" + leaves.Count);
     }
 
     private void CreateRooms()
     {
-        List<RectInt> roomList = new List<RectInt>();
         foreach (var leaf in leaves)
         {
             int padding = 2;
@@ -56,10 +66,35 @@ public class DungeonGenerator : MonoBehaviour
                 leaf.rect.y + leaf.rect.height - roomHeight - 1);
 
             leaf.room = new RectInt(roomx, roomy, roomWidth, roomHeight);
-            roomList.Add(leaf.room);
         }
+    }
 
-        edges = GenerateMST(roomList);
+    private void CreateCorridor(Vector2Int a, Vector2Int b)
+    {
+        bool horizontalFirst = Random.value > 0.5f;
+        if (horizontalFirst)
+        {
+            Vector2Int mid = new Vector2Int(b.x, a.y);
+
+            DrawLine(a, mid);
+            DrawLine(mid, b);
+        }
+        else
+        {
+            Vector2Int mid = new Vector2Int(a.x, b.y);
+
+            DrawLine(a, mid);
+            DrawLine(mid, b);
+        }
+    }
+    private void CreateCorridors()
+    {
+        corridors.Clear();
+
+        foreach (var edge in edges)
+        {
+            CreateCorridor(edge.a,edge.b);
+        }
     }
 
     /// <summary>
@@ -195,6 +230,34 @@ public class DungeonGenerator : MonoBehaviour
                 new Vector3(edge.a.x, edge.a.y, 0),
                 new Vector3(edge.b.x, edge.b.y, 0));
         }
+
+        //»æÖÆ×ßÀÈ
+        Gizmos.color = Color.white;
+
+        foreach (var corridor in corridors)
+        {
+            Gizmos.DrawCube(
+                new Vector3(corridor.x, corridor.y, 0),
+                Vector3.one * 0.5f);
+                
+        }
+    }
+
+    void DrawLine(Vector2Int form, Vector2Int to)
+    {
+        Vector2Int pos = form;
+
+        while (pos != to)
+        {
+            corridors.Add(pos);
+
+            if (pos.x < to.x) pos.x++;
+            else if (pos.x > to.x) pos.x--;
+            else if (pos.y < to.y) pos.y++;
+            else if (pos.y > to.y) pos.y--;
+        }
+
+        corridors.Add(to);
     }
 
     Vector2Int GetRoomCenter(RectInt room)
