@@ -284,8 +284,13 @@ public class DungeonGenerator : MonoBehaviour
             notes.Add(GetRoomCenter(room));
         }
 
-        List<Vector2Int> connected = new List<Vector2Int>();
-        List<Vector2Int> remaining = new List<Vector2Int>(notes);
+        List<int> connected = new List<int>();
+        List<int> remaining = new List<int>(notes.Count);
+
+        for (int i = 0; i < notes.Count; i++)
+        {
+            remaining.Add(i);
+        }
 
         connected.Add(remaining[0]);
         remaining.RemoveAt(0);
@@ -293,23 +298,24 @@ public class DungeonGenerator : MonoBehaviour
         while(remaining.Count > 0)
         {
             Edge shortest = null;
-
+            int rc = 0;
             foreach (var c in connected)
             {
                 foreach (var r in remaining)
                 {
-                    Edge e = new Edge(c, r);
+                    Edge e = new Edge(notes[c], notes[r], rooms[c], rooms[r]);
                     if (shortest == null || shortest.distance > e.distance)
                     {
                         shortest = e;
+                        rc = r;
                     }
                 }
             }
 
             mst.Add(shortest);
 
-            connected.Add(shortest.b);
-            remaining.Remove(shortest.b);
+            connected.Add(rc);
+            remaining.Remove(rc);
         }
 
         return mst;
