@@ -6,6 +6,7 @@ public class BSPNode
 {
     public RectInt rect;
     public RectInt room;
+    public RoomType roomType = RoomType.Normal;
 
     public BSPNode left;
     public BSPNode right;

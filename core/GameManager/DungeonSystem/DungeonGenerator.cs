@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -10,15 +11,60 @@ public class DungeonGenerator : MonoBehaviour
 
     public int minLeafSize = 10;
 
+    public Tilemap floorTilemap;
+    public TileBase floorTile;
+    public Tilemap wallTilemap;
+    public TileBase wallTile;
+
+    public int seed = 12345;
+    public bool randomSeed = true;
+
     BSPNode root;
 
     List<BSPNode> leaves = new List<BSPNode>();
     List<Edge> edges = new List<Edge>();
     List<Vector2Int> corridors = new List<Vector2Int>();
 
+    HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
+    HashSet<Vector2Int> wall = new HashSet<Vector2Int>();
+
+
+    Dictionary<BSPNode, int> leafIndex = new Dictionary<BSPNode, int>();
+
     private void Start()
     {
+        if (randomSeed)
+            seed = Random.Range(0 , 999999);
+        Random.InitState(seed);
+
         GenerateBSP();
+
+        BuildTiles();
+    }
+
+    private void BuildTiles()
+    {
+        floorTilemap.ClearAllTiles();
+
+        CollectRooms();
+        CollectCorridors();
+
+        GenerateWalls();
+
+        foreach (var p in floor)
+        {
+            floorTilemap.SetTile(
+                new Vector3Int(p.x,p.y,0),
+                floorTile);
+
+        }
+
+        foreach (var p in wall)
+        {
+            wallTilemap.SetTile(
+                new Vector3Int(p.x, p.y, 0),
+                wallTile);
+        }
     }
 
     private void GenerateBSP()
@@ -30,6 +76,15 @@ public class DungeonGenerator : MonoBehaviour
         GetLeaves(root);
 
         CreateRooms();
+
+        IndexLeaves();
+
+        AssignStartRoom();
+
+        AssignBossRoom();
+
+        AssignSpecialRooms();
+
 
         List<RectInt> roomList = new List<RectInt>();
 
@@ -43,6 +98,8 @@ public class DungeonGenerator : MonoBehaviour
         CreateCorridors();
         Debug.Log("Leaf count:" + leaves.Count);
     }
+
+
 
     private void CreateRooms()
     {
@@ -68,7 +125,77 @@ public class DungeonGenerator : MonoBehaviour
             leaf.room = new RectInt(roomx, roomy, roomWidth, roomHeight);
         }
     }
-    //todo: 添加道路
+
+    void IndexLeaves()
+    {
+        leafIndex.Clear();
+        for (int i = 0; i < leaves.Count; i++)
+        {
+            leafIndex.Add(leaves[i], i);
+        }
+    }
+
+    void AssignStartRoom()
+    {
+        BSPNode start = leaves[0];
+
+        foreach(var leaf in leaves)
+        {
+            if (leaf.room.x < start.room.x)
+                start = leaf;
+        }
+
+        start.roomType = RoomType.Start;
+    }
+
+    private void AssignBossRoom()
+    {
+        BSPNode start = null;
+        foreach (var leaf in leaves)
+        {
+            if (leaf.roomType == RoomType.Start)
+                start = leaf;
+        }
+
+        BSPNode farthest = start;
+        float maxDist = 0;
+
+        Vector2Int startc = GetRoomCenter(start.room);
+
+        foreach (var leaf in leaves)
+        {
+            Vector2Int c = GetRoomCenter(leaf.room);
+
+            float d = Vector2Int.Distance(startc, c);
+
+            if (d > maxDist)
+            {
+                maxDist = d;
+                farthest = leaf;
+            }
+        }
+
+        farthest.roomType = RoomType.Boss;
+    }    
+
+    void AssignSpecialRooms()
+    {
+        foreach (var leaf in leaves)
+        {
+            if (leaf.roomType != RoomType.Normal)
+                continue;
+
+            float r = Random.value;
+
+            if (r < 0.05f)
+                leaf.roomType = RoomType.Shop;
+            else if (r < 0.1f)
+                leaf.roomType = RoomType.Treasure;
+        }
+    }
+
+
+
     private void CreateCorridor(Vector2Int a, Vector2Int b, bool isHorizontal)
     {
         Vector2Int m = new Vector2Int((a.x + b.x) / 2, (a.y + b.y) / 2);
@@ -102,6 +229,54 @@ public class DungeonGenerator : MonoBehaviour
         foreach (var edge in edges)
         {
             CreateCorridor(edge.aP,edge.bP,edge.isHorizontal);
+        }
+    }
+
+    void GenerateWalls()
+    {
+        wall.Clear();
+
+        foreach (var f in floor)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    Vector2Int p = new Vector2Int(f.x + x, f.y + y);
+
+                    if (!floor.Contains(p))
+                    {
+                        wall.Add(p);
+                    }
+                }
+            }
+        }
+    }
+
+    void CollectRooms()
+    {
+        floor.Clear();
+        foreach (var leaf in leaves)
+        {
+            RectInt r = leaf.room;
+
+            for (int x = r.x;x < r.xMax; x++)
+            {
+                for (int y = r.y; y < r.yMax; y++)
+                {
+                    floor.Add(new Vector2Int(x, y));
+                }
+            }
+
+        }
+
+    }
+
+    void CollectCorridors()
+    {
+        foreach (var c in corridors)
+        {
+            floor.Add(c);
         }
     }
 
@@ -217,7 +392,7 @@ public class DungeonGenerator : MonoBehaviour
             //绘制房间
             RectInt room = leaf.room;
 
-            Gizmos.color = Color.yellow;
+            Gizmos.color = GetRoomColor(leaf.roomType);
             Vector3 roomPos = new Vector3(
                 room.x + room.width / 2f,
                 room.y + room.height / 2f,
@@ -226,6 +401,8 @@ public class DungeonGenerator : MonoBehaviour
             Vector3 roomsize = new Vector3(room.width, room.height, 1);
 
             Gizmos.DrawWireCube(roomPos, roomsize);
+
+
 
         }
 
@@ -248,6 +425,25 @@ public class DungeonGenerator : MonoBehaviour
                 new Vector3(corridor.x, corridor.y, 0),
                 Vector3.one * 0.5f);
                 
+        }
+    }
+
+    Color GetRoomColor(RoomType t)
+    {
+        switch (t)
+        {
+            case RoomType.Start:
+                return Color.blue;
+            case RoomType.Normal:
+                return Color.white;
+            case RoomType.Boss:
+                return Color.red;
+            case RoomType.Shop:
+                return Color.green;
+            case RoomType.Treasure:
+                return Color.cyan;
+            default:
+                return Color.yellow;
         }
     }
 
