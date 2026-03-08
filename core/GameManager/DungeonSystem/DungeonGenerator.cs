@@ -68,23 +68,31 @@ public class DungeonGenerator : MonoBehaviour
             leaf.room = new RectInt(roomx, roomy, roomWidth, roomHeight);
         }
     }
-
-    private void CreateCorridor(Vector2Int a, Vector2Int b)
+    //todo: Ìí¼ÓµÀÂ·
+    private void CreateCorridor(Vector2Int a, Vector2Int b, bool isHorizontal)
     {
-        bool horizontalFirst = Random.value > 0.5f;
-        if (horizontalFirst)
+        Vector2Int m = new Vector2Int((a.x + b.x) / 2, (a.y + b.y) / 2);
+        if (isHorizontal)
         {
-            Vector2Int mid = new Vector2Int(b.x, a.y);
+            Vector2Int mida = new Vector2Int(m.x, a.y);
 
-            DrawLine(a, mid);
-            DrawLine(mid, b);
+            DrawLine(a, mida);
+            DrawLine(mida, m);
+
+            Vector2Int midb = new Vector2Int(m.x, b.y);
+            DrawLine(midb, b);
+            DrawLine(m, midb);
         }
         else
         {
-            Vector2Int mid = new Vector2Int(a.x, b.y);
+            Vector2Int mida = new Vector2Int(a.x, m.y);
 
-            DrawLine(a, mid);
-            DrawLine(mid, b);
+            DrawLine(a, mida);
+            DrawLine(mida, m);
+
+            Vector2Int midb = new Vector2Int(b.x, m.y);
+            DrawLine(midb, b);
+            DrawLine(m, midb);
         }
     }
     private void CreateCorridors()
@@ -93,7 +101,7 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (var edge in edges)
         {
-            CreateCorridor(edge.a,edge.b);
+            CreateCorridor(edge.aP,edge.bP,edge.isHorizontal);
         }
     }
 
