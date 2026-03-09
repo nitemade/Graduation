@@ -6,6 +6,7 @@ public class BSPNode
 {
     public RectInt rect;
     public RectInt room;
+    public HashSet<Vector2Int> doors = new HashSet<Vector2Int>();
     public RoomType roomType = RoomType.Normal;
 
     public BSPNode left;

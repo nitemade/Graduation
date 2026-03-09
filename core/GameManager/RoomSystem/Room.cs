@@ -1,32 +1,24 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    private Transform[] spawnPoints;
-    private Door[] doors;
+    private HashSet<Vector3Int> spawnPoints = new HashSet<Vector3Int>();
+    private HashSet<Vector2> doorPoint = new HashSet<Vector2>();
+    private RoomManager roomManager;
+    LayerMask doorMask;
+
     public GameObject enemyPrefab;
+
+    private RectInt roomRect;
+    [SerializeField] private int maxEnemyCs = 3;
+    [SerializeField] private int minEnemyCs = 1;
 
     private int enemyCount = 0;
     private bool enemiesSpawned = false;
-
-    private void Awake()
-    {
-        Transform[] allChildren = GetComponentsInChildren<Transform>();
-        spawnPoints = System.Array.FindAll(allChildren,t => t.CompareTag("SpawnPoint"));
-        doors = GetComponentsInChildren<Door>();
-    }
-
-    private void Start()
-    {
-        foreach (Door door in doors)
-        {
-            door.Open();
-        }
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -43,13 +35,30 @@ public class Room : MonoBehaviour
         }
     }
 
-    
+    private void Awake()
+    {
+        doorMask = LayerMask.GetMask("Door");
+    }
+
 
     private void SpawnEnemies()
     {
-        foreach(Transform spawn in spawnPoints)
+        int eCounts = Random.Range(minEnemyCs, maxEnemyCs);
+        while (eCounts > 0)
         {
-            GameObject enemy = Instantiate(enemyPrefab, spawn.position, Quaternion.identity);
+            int eX = Random.Range(roomRect.x + 2, roomRect.x + roomRect.width - 1);
+            int eY = Random.Range(roomRect.y + 2, roomRect.y + roomRect.height -1);
+
+            Vector3Int v = new Vector3Int(eX, eY, 0);
+
+            if (spawnPoints.Add(v))
+            {
+                eCounts--;
+            }
+        }
+        foreach (var spawn in spawnPoints)
+        {
+            GameObject enemy = Instantiate(enemyPrefab, spawn, Quaternion.identity);
             enemy.transform.parent = transform;
             AIStateMachine aIState = enemy.GetComponent<AIStateMachine>();
             aIState.Init(this);
@@ -68,16 +77,42 @@ public class Room : MonoBehaviour
     }
     private void CloseDoors()
     {
-        foreach (Door door in doors)
+        foreach (var p in doorPoint)
         {
+            Door door = GetDoorAt(p);
+
+            if (door != null)
+            {
                 door.Close();
+            }
         }
     }
     private void OpenDoors()
     {
-        foreach (Door door in doors)
+        foreach (var p in doorPoint)
         {
-            door.Open();
+            Door door = GetDoorAt(p);
+
+            if (door != null)
+            {
+                door.Open();
+            }
         }
+    }
+
+    Door GetDoorAt(Vector2 pos)
+    {
+        return roomManager.GetDoorByPosition(pos);
+
+    }
+    public void SetRoomRect(RectInt room)
+    {
+        roomRect = room;
+    }
+
+    public void SetDoorPoints(Vector2 door,RoomManager roomManager)
+    {
+        this.roomManager = roomManager;
+        doorPoint.Add(door);
     }
 }

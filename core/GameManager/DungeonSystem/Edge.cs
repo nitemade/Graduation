@@ -30,11 +30,11 @@ public class Edge
             if (a.x < b.x)
             {
                 aP = new Vector2Int(rooma.x + rooma.width, rooma.y + rooma.height / 2);
-                bP = new Vector2Int(roomb.x, roomb.y + roomb.height / 2);
+                bP = new Vector2Int(roomb.x - 1, roomb.y + roomb.height / 2);
             }
             else
             {
-                aP = new Vector2Int(rooma.x, rooma.y + rooma.height / 2);
+                aP = new Vector2Int(rooma.x -1, rooma.y + rooma.height / 2);
                 bP = new Vector2Int(roomb.x + roomb.width, roomb.y + roomb.height / 2);
             }
 
@@ -45,11 +45,11 @@ public class Edge
             if (a.y < b.y)
             {
                 aP = new Vector2Int(rooma.x + rooma.width / 2, rooma.y + rooma.height); 
-                bP = new Vector2Int(roomb.x + roomb.width / 2, roomb.y);
+                bP = new Vector2Int(roomb.x + roomb.width / 2, roomb.y - 1);
             }
             else
             {
-                aP = new Vector2Int(rooma.x + rooma.width / 2, rooma.y);
+                aP = new Vector2Int(rooma.x + rooma.width / 2, rooma.y - 1);
                 bP = new Vector2Int(roomb.x + roomb.width / 2, roomb.y + roomb.height);
             }
 

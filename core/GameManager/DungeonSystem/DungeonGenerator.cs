@@ -1,3 +1,5 @@
+using Cinemachine;
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
@@ -16,6 +18,13 @@ public class DungeonGenerator : MonoBehaviour
     public Tilemap wallTilemap;
     public TileBase wallTile;
 
+    public GameObject roomPrefab;
+    public GameObject doorPrefab;
+    public GameObject playerPrefab;
+
+    public CinemachineVirtualCamera virtualCamera;
+    private RoomManager roomManager;
+
     public int seed = 12345;
     public bool randomSeed = true;
 
@@ -23,13 +32,19 @@ public class DungeonGenerator : MonoBehaviour
 
     List<BSPNode> leaves = new List<BSPNode>();
     List<Edge> edges = new List<Edge>();
-    List<Vector2Int> corridors = new List<Vector2Int>();
 
+    HashSet<Vector2Int> corridors = new HashSet<Vector2Int>();
     HashSet<Vector2Int> floor = new HashSet<Vector2Int>();
     HashSet<Vector2Int> wall = new HashSet<Vector2Int>();
+    HashSet<Vector2Int> doors  = new HashSet<Vector2Int>();
 
 
     Dictionary<BSPNode, int> leafIndex = new Dictionary<BSPNode, int>();
+
+    private void Awake()
+    {
+        roomManager = GetComponent<RoomManager>();
+    }
 
     private void Start()
     {
@@ -38,6 +53,17 @@ public class DungeonGenerator : MonoBehaviour
         Random.InitState(seed);
 
         GenerateBSP();
+
+        CreateRoomObjects();
+
+        if (AstarPath.active != null)
+        {
+            GridGraph gridGraph = AstarPath.active.data.gridGraph;
+            gridGraph.SetDimensions(mapWidth, mapHeight,1);
+            gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
+            AstarPath.active.Scan();
+            Debug.Log("网格创建成功");
+        }
 
         BuildTiles();
     }
@@ -123,6 +149,90 @@ public class DungeonGenerator : MonoBehaviour
                 leaf.rect.y + leaf.rect.height - roomHeight - 1);
 
             leaf.room = new RectInt(roomx, roomy, roomWidth, roomHeight);
+        }
+    }
+
+    private void CreateRoomObjects()
+    {
+        foreach (var leaf in leaves)
+        {
+
+            if (leaf.roomType == RoomType.Start)
+            {
+                if (virtualCamera == null)
+                {
+                    // 如果没有提前引用，就动态查找场景中的虚拟相机
+                    virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
+                }
+
+
+                GameObject player = Instantiate(playerPrefab);
+
+                player.transform.position =
+                    new Vector3(
+                        leaf.room.x + leaf.room.width / 2f,
+                        leaf.room.y + leaf.room.height / 2f,
+                        0
+                    );
+                player.layer = LayerMask.NameToLayer("Players");
+                player.tag = "Player";
+
+                if (virtualCamera != null && player != null)
+                {
+                    // 关键：设置 Follow 目标为玩家的 Transform
+                    virtualCamera.Follow = player.transform;
+                    Debug.Log("虚拟相机已跟随玩家");
+                }
+            }
+
+            RectInt r = leaf.room;
+
+            GameObject obj = Instantiate(roomPrefab);
+
+            obj.name = "Room";
+
+            obj.transform.position =
+                new Vector3(
+                    r.x + r.width / 2f,
+                    r.y + r.height / 2f,
+                    0
+                );
+
+            BoxCollider2D col = obj.GetComponent<BoxCollider2D>();
+
+            col.size = new Vector2Int(r.width, r.height);
+
+            Room rc =  obj.GetComponent<Room>();
+
+            rc.SetRoomRect(leaf.room);
+
+
+            if (leaf.doors.Count == 0)
+                continue;
+
+            foreach (var door in leaf.doors)
+            {
+                GameObject obj2 = Instantiate(doorPrefab);
+
+                obj2.name = "Door";
+
+                obj2.layer = LayerMask.NameToLayer("Door");
+                obj2.tag = "Door";
+
+                obj2.transform.position =
+                    new Vector3(
+                        door.x,
+                        door.y,
+                        0
+                    );
+
+                roomManager.AddDoor(obj2.GetComponent<Door>());
+
+                obj2.SetActive(false);
+
+
+                rc.SetDoorPoints(door,roomManager);
+            }
         }
     }
 
@@ -252,6 +362,7 @@ public class DungeonGenerator : MonoBehaviour
             }
         }
     }
+
 
     void CollectRooms()
     {
@@ -472,6 +583,7 @@ public class DungeonGenerator : MonoBehaviour
     }
 
 
+
     /// <summary>
     /// 生成最小生成树(Prim)
     /// </summary>
@@ -503,6 +615,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             Edge shortest = null;
             int rc = 0;
+            int cc = 0;
             foreach (var c in connected)
             {
                 foreach (var r in remaining)
@@ -512,9 +625,15 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         shortest = e;
                         rc = r;
+                        cc = c;
                     }
                 }
             }
+
+            leaves[cc].doors.Add(shortest.aP);
+            leaves[rc].doors.Add(shortest.bP);
+            doors.Add(shortest.aP);
+            doors.Add(shortest.bP);
 
             mst.Add(shortest);
 
