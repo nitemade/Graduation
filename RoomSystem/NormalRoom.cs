@@ -67,6 +67,7 @@ public class NormalRoom : Room
         if (enemyCount <= 0)
         {
             OpenDoors();
+            RoomManager.instance.RoomCleared();
         }
     }
 }
