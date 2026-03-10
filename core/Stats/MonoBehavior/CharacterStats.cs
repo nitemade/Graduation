@@ -18,21 +18,23 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     #region ÊôÐÔ
 
-    public float MaxHealth => runtimeData.maxHealth;
-    public float MaxMana => runtimeData.maxMana;
-    public float Speed => runtimeData.speed;
-    public float Defense => runtimeData.defense;
+    public float MaxHealth => runtimeData.finalStats.maxHealth;
+    public float MaxMana => runtimeData.finalStats.maxMana;
+    public float Speed => runtimeData.finalStats.speed;
+    public float Defense => runtimeData.finalStats.defense;
     public float CurrentHealth => currentHealth;
     public float CurrentMana => currentMana;
     public float CurrentSpeed => currentSpeed;
 
-    public Vector2 BoxSize => runtimeData.boxSize;
-    public float NormalDamage => runtimeData.normalDamage;        
-    public float Cooldown => runtimeData.cooldown;
-    public float ManaCost => runtimeData.manaCost;
-    public float NormalAttackRange => runtimeData.normalAttackRange;
-    public int NormalAttackCount => runtimeData.normalAttackCount;
-    public float NormalAttackSpeed => runtimeData.normalAttackSpeed;
+    public Vector2 BoxSize => runtimeData.finalStats.boxSize;
+    public float NormalDamage => runtimeData.finalStats.normalDamage;
+    public float Cooldown => runtimeData.finalStats.cooldown;
+    public float ManaCost => runtimeData.finalStats.manaCost;
+    public float NormalAttackRange => runtimeData.finalStats.normalAttackRange;
+    public int NormalAttackCount => runtimeData.finalStats.normalAttackCount;
+    public float NormalAttackSpeed => runtimeData.finalStats.normalAttackSpeed;
+
+    public CharacterRuntimeData RuntimeData => runtimeData;
 
     #endregion
 
@@ -52,9 +54,9 @@ public class CharacterStats : MonoBehaviour,IAttackable
     private void Init()
     {
         runtimeData = new CharacterRuntimeData(playerData, attackData);
-        currentHealth = runtimeData.maxHealth;
-        currentMana = runtimeData.maxMana;
-        currentSpeed = runtimeData.speed;
+        currentHealth = MaxHealth;
+        currentMana = MaxMana;
+        currentSpeed = Speed;
     }
     #endregion
 
@@ -69,7 +71,7 @@ public class CharacterStats : MonoBehaviour,IAttackable
     public void TakeDamage(float damage)
     {
         if (IsDead) return;
-        float finalDamage = MathF.Max(damage - runtimeData.defense, 1f);
+        float finalDamage = MathF.Max(damage - Defense, 1f);
 
         
         ChangeHealth(-finalDamage);
@@ -103,6 +105,41 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     #region Éý¼¶/buff 
     //TODO: Éý¼¶
+
+    public void ApplyEnhancement(Enhancement_SO e)
+    {
+        runtimeData.enhancementData.AddStack(e.id.ToString());
+
+        foreach (var mod in e.modifiers)
+        {
+            ApplyModifier(mod);
+        }
+
+        runtimeData.Recalculate();
+    }
+    void ApplyModifier(StatModifier mod)
+    {
+        var bonus = runtimeData.bonusStats;
+
+        switch (mod.statType)
+        {
+            case StatType.MaxHealth:
+                bonus.maxHealth += mod.value;
+                break;
+
+            case StatType.NormalDamage:
+                bonus.normalDamage += mod.value;
+                break;
+
+            case StatType.MoveSpeed:
+                bonus.speed += mod.value;
+                break;
+
+            case StatType.NormalAttackSpeed:
+                bonus.normalAttackSpeed += mod.value;
+                break;
+        }
+    }
     #endregion
 
     #region ×´Ì¬

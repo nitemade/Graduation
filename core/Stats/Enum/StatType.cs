@@ -6,9 +6,9 @@ public enum StatType
 {
     None,
 
-    MaxHP,
-    Attack,
-    AttackSpeed,
+    MaxHealth,
+    NormalDamage,
+    NormalAttackSpeed,
     MoveSpeed,
 
     CritRate,

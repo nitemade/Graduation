@@ -6,34 +6,31 @@ using UnityEngine;
 [Serializable]
 public class CharacterRuntimeData
 {
-    // 基础属性（可升级）
-    public float maxHealth;
-    public float maxMana;
-    public float speed;
-    public float defense;
+    // 职业
+    public ProfessionType profession;
 
-    // 战斗属性
-    public Vector2 boxSize;
-    public float normalDamage;
-    public float cooldown;
-    public float manaCost;
-    public float normalAttackRange;
-    public int normalAttackCount;
-    public float normalAttackSpeed;
+    // 三层属性
+    public CharacterStatBlock baseStats;
+    public CharacterStatBlock bonusStats;
+    public CharacterStatBlock finalStats;
+
+    // 强化
+    public EnhancementRuntimeData enhancementData;
 
     public CharacterRuntimeData(PlayerData_SO playerData, AttackData_SO attackData)
     {
-        maxHealth = playerData.maxHealth;
-        maxMana = playerData.maxMana;
-        speed = playerData.speed;
-        defense = playerData.defense;
+        baseStats = new CharacterStatBlock(playerData, attackData);
+        bonusStats = new CharacterStatBlock();
+        finalStats = new CharacterStatBlock();
 
-        boxSize = attackData.boxSize;
-        normalDamage = attackData.normalDamage;  // 注意拼写
-        cooldown = attackData.cooldown;
-        manaCost = attackData.manaCost;
-        normalAttackRange = attackData.normalAttackRange;
-        normalAttackCount = attackData.normalAttackCount;
-        normalAttackSpeed = attackData.normalAttackSpeed;
+        enhancementData = new EnhancementRuntimeData();
+
+        Recalculate();
+    }
+
+    public void Recalculate()
+    {
+        finalStats.CopyFrom(baseStats);
+        finalStats.Add(bonusStats);
     }
 }

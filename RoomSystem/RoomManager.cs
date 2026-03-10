@@ -73,4 +73,9 @@ public class RoomManager : MonoBehaviour
         }
          return null;
     }
+
+    public void RoomCleared()
+    {
+        EnhancementManager.Instance.ShowEnhancement();
+    }
 }

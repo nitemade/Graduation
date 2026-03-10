@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 
 [CreateAssetMenu(fileName = "New Enhancement", menuName = "ScriptableObjects/Enhancement")]
 public class Enhancement_SO : ScriptableObject
@@ -12,16 +10,16 @@ public class Enhancement_SO : ScriptableObject
     public string description;
     public Sprite icon;
 
+    [Header("Rarity")]
     public EnhancementRarity rarity;
     public int weight;
-    public int maxStack;
+    public int maxStack = 1;
 
-    public StatType statType;
-    public float Value;
+    [Header("Modifiers")]
+    public List<StatModifier> modifiers;
 
+    [Header("Limit")]
     public EnhancementTag tag;
     public ProfessionType professionLimit;
 
-    public bool isPercent;
-    
 }
