@@ -161,8 +161,6 @@ public class DungeonGenerator : MonoBehaviour
         foreach (var leaf in leaves)
         {
 
-            RoomInit(leaf);
-
             RectInt r = leaf.room;
 
             GameObject obj = Instantiate(roomPrefab);
@@ -180,9 +178,9 @@ public class DungeonGenerator : MonoBehaviour
 
             col.size = new Vector2Int(r.width, r.height);
 
-            Room rc =  obj.GetComponent<Room>();
+            Room rc =  roomManager.CreateRoom(obj, leaf.roomType);
 
-            rc.SetRoomRect(leaf.room);
+            rc.Init(r,roomManager);
 
 
             if (leaf.doors.Count == 0)
@@ -193,7 +191,6 @@ public class DungeonGenerator : MonoBehaviour
                 GameObject obj2 = Instantiate(doorPrefab);
 
                 obj2.name = "Door";
-
                 obj2.layer = LayerMask.NameToLayer("Door");
                 obj2.tag = "Door";
 
@@ -204,43 +201,14 @@ public class DungeonGenerator : MonoBehaviour
                         0
                     );
 
-                roomManager.AddDoor(obj2.GetComponent<Door>());
+                Door d = obj2.GetComponent<Door>();
+
+                roomManager.AddDoor(d);
+
+                rc.AddDoor(door);
 
                 obj2.SetActive(false);
 
-
-                rc.SetDoorPoints(door,roomManager);
-            }
-        }
-    }
-
-    private void RoomInit(BSPNode leaf)
-    {
-        if (leaf.roomType == RoomType.Start)
-        {
-            if (virtualCamera == null)
-            {
-                // 如果没有提前引用，就动态查找场景中的虚拟相机
-                virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
-            }
-
-
-            GameObject player = Instantiate(playerPrefab);
-
-            player.transform.position =
-                new Vector3(
-                    leaf.room.x + leaf.room.width / 2f,
-                    leaf.room.y + leaf.room.height / 2f,
-                    0
-                );
-            player.layer = LayerMask.NameToLayer("Players");
-            player.tag = "Player";
-
-            if (virtualCamera != null && player != null)
-            {
-                // 关键：设置 Follow 目标为玩家的 Transform
-                virtualCamera.Follow = player.transform;
-                Debug.Log("虚拟相机已跟随玩家");
             }
         }
     }
