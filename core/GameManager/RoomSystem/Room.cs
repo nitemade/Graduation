@@ -20,6 +20,13 @@ public class Room : MonoBehaviour
     private int enemyCount = 0;
     private bool enemiesSpawned = false;
 
+
+    private void Awake()
+    {
+        doorMask = LayerMask.GetMask("Door");
+        enemyPrefab = Resources.Load<GameObject>("Prefabs/Enemies/Orc");
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player") && !enemiesSpawned)
@@ -33,11 +40,6 @@ public class Room : MonoBehaviour
             CloseDoors();
 
         }
-    }
-
-    private void Awake()
-    {
-        doorMask = LayerMask.GetMask("Door");
     }
 
 

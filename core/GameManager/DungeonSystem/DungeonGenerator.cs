@@ -18,9 +18,9 @@ public class DungeonGenerator : MonoBehaviour
     public Tilemap wallTilemap;
     public TileBase wallTile;
 
-    public GameObject roomPrefab;
-    public GameObject doorPrefab;
-    public GameObject playerPrefab;
+    private GameObject roomPrefab;
+    private GameObject doorPrefab;
+    private GameObject playerPrefab;
 
     public CinemachineVirtualCamera virtualCamera;
     private RoomManager roomManager;
@@ -44,6 +44,10 @@ public class DungeonGenerator : MonoBehaviour
     private void Awake()
     {
         roomManager = GetComponent<RoomManager>();
+
+        roomPrefab = Resources.Load<GameObject>("Prefabs/Room/Room");
+        doorPrefab = Resources.Load<GameObject>("Prefabs/Room/Door");
+        playerPrefab = Resources.Load<GameObject>("Prefabs/Players/Soldier");
     }
 
     private void Start()
@@ -157,33 +161,7 @@ public class DungeonGenerator : MonoBehaviour
         foreach (var leaf in leaves)
         {
 
-            if (leaf.roomType == RoomType.Start)
-            {
-                if (virtualCamera == null)
-                {
-                    // 如果没有提前引用，就动态查找场景中的虚拟相机
-                    virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
-                }
-
-
-                GameObject player = Instantiate(playerPrefab);
-
-                player.transform.position =
-                    new Vector3(
-                        leaf.room.x + leaf.room.width / 2f,
-                        leaf.room.y + leaf.room.height / 2f,
-                        0
-                    );
-                player.layer = LayerMask.NameToLayer("Players");
-                player.tag = "Player";
-
-                if (virtualCamera != null && player != null)
-                {
-                    // 关键：设置 Follow 目标为玩家的 Transform
-                    virtualCamera.Follow = player.transform;
-                    Debug.Log("虚拟相机已跟随玩家");
-                }
-            }
+            RoomInit(leaf);
 
             RectInt r = leaf.room;
 
@@ -232,6 +210,37 @@ public class DungeonGenerator : MonoBehaviour
 
 
                 rc.SetDoorPoints(door,roomManager);
+            }
+        }
+    }
+
+    private void RoomInit(BSPNode leaf)
+    {
+        if (leaf.roomType == RoomType.Start)
+        {
+            if (virtualCamera == null)
+            {
+                // 如果没有提前引用，就动态查找场景中的虚拟相机
+                virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
+            }
+
+
+            GameObject player = Instantiate(playerPrefab);
+
+            player.transform.position =
+                new Vector3(
+                    leaf.room.x + leaf.room.width / 2f,
+                    leaf.room.y + leaf.room.height / 2f,
+                    0
+                );
+            player.layer = LayerMask.NameToLayer("Players");
+            player.tag = "Player";
+
+            if (virtualCamera != null && player != null)
+            {
+                // 关键：设置 Follow 目标为玩家的 Transform
+                virtualCamera.Follow = player.transform;
+                Debug.Log("虚拟相机已跟随玩家");
             }
         }
     }
