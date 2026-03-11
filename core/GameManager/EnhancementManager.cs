@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-public class EnhancementManager : MonoBehaviour
+public class EnhancementManager : Singleton<EnhancementManager>
 {
-    public static EnhancementManager Instance;
 
     public EnhancementPool pool;
     public EnhancementPanelUI panel;
@@ -14,9 +13,9 @@ public class EnhancementManager : MonoBehaviour
     private CharacterRuntimeData runtimeData;
 
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
     }
 
     public void Init(CharacterStats stats)

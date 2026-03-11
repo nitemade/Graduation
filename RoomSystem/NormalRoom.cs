@@ -26,7 +26,7 @@ public class NormalRoom : Room
         {
             spawned = true;
 
-            RoomManager.instance.EnterRoom(this);
+            RoomManager.Instance.EnterRoom(this);
 
             SpawnEnemies();
 
@@ -52,10 +52,16 @@ public class NormalRoom : Room
         }
         foreach (var spawn in spawnPoints)
         {
-            GameObject enemy = Instantiate(enemyPrefab, spawn, Quaternion.identity);
-            enemy.transform.parent = transform;
-            AIStateMachine aIState = enemy.GetComponent<AIStateMachine>();
-            aIState.Init(this);
+            PoolManager.Instance.Spawn(AddressConst.ORC, spawn, Quaternion.identity, transform,
+            (enemy) =>
+            {
+                var ai = enemy.GetComponent<AIStateMachine>();
+
+                ai.Init(this);
+
+                
+            });
+
             enemyCount++;
         }
         Debug.Log("生成敌人数量: " + enemyCount);
@@ -67,7 +73,8 @@ public class NormalRoom : Room
         if (enemyCount <= 0)
         {
             OpenDoors();
-            RoomManager.instance.RoomCleared();
+            //todo: 通知房间已清空(未实现)
+            //RoomManager.Instance.RoomCleared();
         }
     }
 }

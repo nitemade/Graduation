@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class RoomManager : MonoBehaviour
+public class RoomManager : Singleton<RoomManager>
 {
-    public static RoomManager instance;
     public Room currentRoom;
 
     private Dictionary<Vector2, Door> doorPositionMap = new Dictionary<Vector2, Door>();
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         doorPositionMap.Clear();
-        instance = this;
+        currentRoom = null;
     }
 
     public Room CreateRoom(GameObject obj, RoomType type)

@@ -8,7 +8,6 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     protected HashSet<Vector2> doorPoint = new HashSet<Vector2>();
-    protected RoomManager roomManager;
     protected RectInt roomRect;
 
     protected void CloseDoors()
@@ -38,13 +37,12 @@ public class Room : MonoBehaviour
 
     protected Door GetDoor(Vector2 pos)
     {
-        return roomManager.GetDoorByPosition(pos);
+        return RoomManager.Instance.GetDoorByPosition(pos);
 
     }
-    public virtual void Init(RectInt room,RoomManager manager)
+    public virtual void Init(RectInt room)
     {
         roomRect = room;
-        roomManager = manager;
     }
 
     public virtual void EnemyDead()

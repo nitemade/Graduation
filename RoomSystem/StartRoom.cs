@@ -1,17 +1,13 @@
 using Cinemachine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StartRoom : Room
 {
-    private GameObject playerPrefab;
     public CinemachineVirtualCamera vcam;
 
-    public override void Init(RectInt room, RoomManager manager)
+    public override void Init(RectInt room)
     {
-        base.Init(room, manager);
+        base.Init(room);
         SpawnPlayer();
     }
 
@@ -22,18 +18,19 @@ public class StartRoom : Room
             vcam = FindObjectOfType<CinemachineVirtualCamera>();
         }
 
-        playerPrefab = Resources.Load<GameObject>("Prefabs/Players/Soldier");
-
-        GameObject player = Instantiate(playerPrefab);
-
-        player.transform.position = new Vector3(
-            roomRect.x + roomRect.width / 2, 
-            roomRect.y + roomRect.height / 2, 
+        Vector3 playerPos = new Vector3(
+            roomRect.x + roomRect.width / 2,
+            roomRect.y + roomRect.height / 2,
             0);
 
-        player.layer = LayerMask.NameToLayer("Players");
-        player.tag = "Player";
+        PoolManager.Instance.Spawn(AddressConst.SOLDIER, playerPos, Quaternion.identity, null,
+            (playerOjb) =>
+            {
+                playerOjb.name = "Player";
+                playerOjb.layer = LayerMask.NameToLayer("Players");
+                playerOjb.tag = "Player";
 
-        vcam.Follow = player.transform;
+                vcam.Follow = playerOjb.transform;
+            });
     }
 }

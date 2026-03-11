@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -23,7 +24,6 @@ public class DungeonGenerator : MonoBehaviour
     private GameObject playerPrefab;
 
     public CinemachineVirtualCamera virtualCamera;
-    private RoomManager roomManager;
 
     public int seed = 12345;
     public bool randomSeed = true;
@@ -43,7 +43,6 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Awake()
     {
-        roomManager = GetComponent<RoomManager>();
 
         roomPrefab = Resources.Load<GameObject>("Prefabs/Room/Room");
         doorPrefab = Resources.Load<GameObject>("Prefabs/Room/Door");
@@ -163,53 +162,52 @@ public class DungeonGenerator : MonoBehaviour
 
             RectInt r = leaf.room;
 
-            GameObject obj = Instantiate(roomPrefab);
-
-            obj.name = "Room";
-
-            obj.transform.position =
+            Vector3 roomPos =
                 new Vector3(
                     r.x + r.width / 2f,
                     r.y + r.height / 2f,
                     0
                 );
 
-            BoxCollider2D col = obj.GetComponent<BoxCollider2D>();
+            PoolManager.Instance.Spawn(AddressConst.ROOM, roomPos, Quaternion.identity, null,
+                (roomObj) =>
+                {
 
-            col.size = new Vector2Int(r.width, r.height);
+                    if (roomObj == null)
+                    {
+                        Debug.LogError($"房间实例化失败！地址：{AddressConst.ROOM}，位置：{roomPos}");
+                        return;
+                    }
+                    roomObj.name = "Room";
+                    
+                    BoxCollider2D col = roomObj.GetComponent<BoxCollider2D>();
+                    col.size = new Vector2Int(r.width, r.height);
 
-            Room rc =  roomManager.CreateRoom(obj, leaf.roomType);
+                    Room rc = RoomManager.Instance.CreateRoom(roomObj, leaf.roomType);
+                    rc.Init(r);
 
-            rc.Init(r,roomManager);
+                    if (leaf.doors.Count == 0)
+                        return;
 
+                    foreach (var door in leaf.doors)
+                    {
+                        Vector3 doorPos = new Vector3(door.x, door.y, 0);
 
-            if (leaf.doors.Count == 0)
-                continue;
+                        PoolManager.Instance.Spawn(AddressConst.DOOR, doorPos, Quaternion.identity, null,
+                            (doorOdj) =>
+                            {
+                                doorOdj.name = "Door";
+                                doorOdj.layer = LayerMask.NameToLayer("Door");
+                                doorOdj.tag = "Door";
 
-            foreach (var door in leaf.doors)
-            {
-                GameObject obj2 = Instantiate(doorPrefab);
+                                RoomManager.Instance.AddDoor(doorOdj.GetComponent<Door>());
 
-                obj2.name = "Door";
-                obj2.layer = LayerMask.NameToLayer("Door");
-                obj2.tag = "Door";
-
-                obj2.transform.position =
-                    new Vector3(
-                        door.x,
-                        door.y,
-                        0
-                    );
-
-                Door d = obj2.GetComponent<Door>();
-
-                roomManager.AddDoor(d);
-
-                rc.AddDoor(door);
-
-                obj2.SetActive(false);
-
-            }
+                                rc.AddDoor(door);
+                                doorOdj.SetActive(false);
+                            });
+                    }
+                }
+                );
         }
     }
 
