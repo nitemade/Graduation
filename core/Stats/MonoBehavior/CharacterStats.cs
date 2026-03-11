@@ -49,14 +49,32 @@ public class CharacterStats : MonoBehaviour,IAttackable
     private void Awake()
     {
         Init();
+
+        Debug.Log("初始化角色数据" + transform.name);
+        Debug.Log("MaxHealth" + MaxHealth);
+        Debug.Log("CurrentHealth" + CurrentHealth);
     }
 
     private void Init()
     {
         runtimeData = new CharacterRuntimeData(playerData, attackData);
+
+        runtimeData.OnMaxHealthChange += OnMaxHealthUpdated;
+
         currentHealth = MaxHealth;
         currentMana = MaxMana;
         currentSpeed = Speed;
+        if (transform.tag == "Player")
+            EnhancementManager.Instance.Init(this);
+    }
+
+    private void OnMaxHealthUpdated(float arg1, float arg2)
+    {
+        Debug.Log("前血量" + currentHealth + "最大血量" + MaxHealth + "当前人物" + transform.name);
+        float delta = arg2 - arg1;
+
+        ChangeHealth(delta);
+        Debug.Log("后血量" + currentHealth + "最大血量" + MaxHealth + "当前人物" + transform.name);
     }
     #endregion
 
@@ -64,8 +82,10 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     private void ChangeHealth(float delta)
     {
+        Debug.Log(transform.name + "当前血量" + currentHealth);
         currentHealth += delta;
         currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth);
+        
     }
 
     public void TakeDamage(float damage)

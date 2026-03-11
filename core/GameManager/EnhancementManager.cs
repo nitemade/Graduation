@@ -69,8 +69,8 @@ public class EnhancementManager : Singleton<EnhancementManager>
 
     bool CheckStack(Enhancement_SO e)
     {
+        
         int stack = runtimeData.enhancementData.GetStack(e.id.ToString());
-
         return stack < e.maxStack;
     }
 

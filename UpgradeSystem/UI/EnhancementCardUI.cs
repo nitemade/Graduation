@@ -10,13 +10,14 @@ public class EnhancementCardUI : MonoBehaviour
 
     public TMP_Text titleText;
     public TMP_Text descText;
-    Button button;
+    public Button button;
 
     private Enhancement_SO data;
     private System.Action<Enhancement_SO> onClick;
 
     public void Init(Enhancement_SO e, System.Action<Enhancement_SO> click)
     {
+
         data = e;
         onClick = click;
 

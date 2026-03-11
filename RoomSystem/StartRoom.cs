@@ -9,6 +9,7 @@ public class StartRoom : Room
     {
         base.Init(room);
         SpawnPlayer();
+        this.name = "StartRoom";
     }
 
     private void SpawnPlayer()

@@ -16,6 +16,7 @@ public class EnhancementPanelUI : MonoBehaviour
             {
                 cards[i].gameObject.SetActive(true);
 
+
                 cards[i].Init(
                     list[i],
                     OnSelectEnhancement

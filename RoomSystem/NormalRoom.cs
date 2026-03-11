@@ -18,6 +18,7 @@ public class NormalRoom : Room
     private void Awake()
     {
         enemyPrefab = Resources.Load<GameObject>("Prefabs/Enemies/Orc");
+        this.name = "NormalRoom";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -74,7 +75,7 @@ public class NormalRoom : Room
         {
             OpenDoors();
             //todo: 通知房间已清空(未实现)
-            //RoomManager.Instance.RoomCleared();
+            RoomManager.Instance.RoomCleared();
         }
     }
 }
