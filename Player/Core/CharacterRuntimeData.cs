@@ -17,7 +17,6 @@ public class CharacterRuntimeData
     // Ç¿»¯
     public EnhancementRuntimeData enhancementData;
 
-    public event Action<float,float> OnMaxHealthChange;
 
     public CharacterRuntimeData(PlayerData_SO playerData, AttackData_SO attackData)
     {
@@ -32,11 +31,7 @@ public class CharacterRuntimeData
 
     public void Recalculate()
     {
-        float oldMaxHealth = finalStats.maxHealth;
-
         finalStats.CopyFrom(baseStats);
         finalStats.Add(bonusStats);
-
-        OnMaxHealthChange?.Invoke(oldMaxHealth, finalStats.maxHealth);
     }
 }

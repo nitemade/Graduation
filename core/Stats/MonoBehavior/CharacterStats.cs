@@ -59,22 +59,11 @@ public class CharacterStats : MonoBehaviour,IAttackable
     {
         runtimeData = new CharacterRuntimeData(playerData, attackData);
 
-        runtimeData.OnMaxHealthChange += OnMaxHealthUpdated;
-
         currentHealth = MaxHealth;
         currentMana = MaxMana;
         currentSpeed = Speed;
         if (transform.tag == "Player")
             EnhancementManager.Instance.Init(this);
-    }
-
-    private void OnMaxHealthUpdated(float arg1, float arg2)
-    {
-        Debug.Log("前血量" + currentHealth + "最大血量" + MaxHealth + "当前人物" + transform.name);
-        float delta = arg2 - arg1;
-
-        ChangeHealth(delta);
-        Debug.Log("后血量" + currentHealth + "最大血量" + MaxHealth + "当前人物" + transform.name);
     }
     #endregion
 
