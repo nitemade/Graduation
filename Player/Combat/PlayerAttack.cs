@@ -28,7 +28,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void NormalAttack()
     {
-        if (Input.GetMouseButtonDown(0) )
+        if (Input.GetMouseButtonDown(0))
         {
             combatController.RequestAttack();
         }

@@ -43,32 +43,6 @@ public class AttackController : MonoBehaviour
         }
 
     }
-    //TODO:攻击范围检测，后期记得删
-    private void OnDrawGizmosSelected()
-    {
-        if (stats == null) return;
-
-        Gizmos.color = Color.red;
-
-        // 获取方向（和攻击逻辑一致）
-        Vector2 dir = lastMoveDir;
-
-        if (dir == Vector2.zero)
-            dir = Vector2.down;   // 默认朝下
-
-        Vector2 attackPos = (Vector2)transform.position + dir * stats.NormalAttackRange;
-        attackPos.y += 0.2f;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        // 旋转矩阵
-        Matrix4x4 rotationMatrix =
-            Matrix4x4.TRS(attackPos, Quaternion.Euler(0, 0, angle), Vector3.one);
-
-        Gizmos.matrix = rotationMatrix;
-
-        Gizmos.DrawWireCube(Vector3.zero, stats.BoxSize);
-
-        Gizmos.matrix = Matrix4x4.identity;
-    }
+   
 
 }

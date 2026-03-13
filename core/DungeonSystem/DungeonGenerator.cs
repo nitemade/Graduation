@@ -25,8 +25,6 @@ public class DungeonGenerator : MonoBehaviour
 
     public CinemachineVirtualCamera virtualCamera;
 
-    public int seed = 12345;
-    public bool randomSeed = true;
 
     BSPNode root;
 
@@ -49,10 +47,8 @@ public class DungeonGenerator : MonoBehaviour
         playerPrefab = Resources.Load<GameObject>("Prefabs/Players/Soldier");
     }
 
-    private void Start()
+    public void Generate(int seed)
     {
-        if (randomSeed)
-            seed = Random.Range(0 , 999999);
         Random.InitState(seed);
 
         GenerateBSP();

@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuManager : MonoBehaviour
+public class MenuManager : Singleton<GameManager>
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject mainMenu;
+    public void StartGame()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GameManager.Instance.StartGame();
+        mainMenu.SetActive(false);
     }
 }
