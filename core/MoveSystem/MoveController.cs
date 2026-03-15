@@ -25,45 +25,45 @@ public class MoveController : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
     }
 
-    private void FixedUpdate()
-    {
-        HandleMovement();
+    //private void FixedUpdate()
+    //{
+    //    HandleMovement();
 
 
-    }
+    //}
 
     private void HandleMovement()
     {
-        if (!CanMove()) 
+        if (!combat.CanAttack() ) 
         {
             rb.velocity = Vector2.zero;
-            animator.StopMove();
+            animator.MoveAnimator(0);
             return;
-        }
-
-        rb.velocity = moveDir * stats.CurrentSpeed;
-
-        if(moveDir != Vector2.zero)
-        {
-            if(moveDir.x != 0)
-                sr.flipX = moveDir.x < 0;
-            animator.Move(moveDir.x, moveDir.y,stats.CurrentSpeed);
         }
         else
         {
-            animator.StopMove();
+            rb.velocity = moveDir * stats.CurrentSpeed;
         }
+
+
+
+        if (moveDir.x != 0)
+            sr.flipX = moveDir.x < 0;
+        animator.Move(moveDir.x, moveDir.y,stats.CurrentSpeed);
+
     }
 
     public void SetInput(Vector2 dir)
     {
         moveDir = dir.normalized;
+        HandleMovement();
     }
 
     public Vector2 GetMoveDirection => moveDir;
     private bool CanMove()
     {
         if (combat == null) return true;
-        return !stats.IsDead && !combat.IsStunned && stats.CurrentState != CharacterState.Attack;
+        return !stats.IsDead && !combat.IsStunned && stats.CurrentState == CharacterState.Walk;
+
     }
 }

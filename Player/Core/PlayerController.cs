@@ -29,7 +29,11 @@ public class PlayerController : MonoBehaviour
     //ÒÆ¶¯
     void MoveInput()
     {
+        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical")!= 0)
+        {
         Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         moveController.SetInput(input);
+        }
+
     }
 }

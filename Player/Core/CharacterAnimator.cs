@@ -45,15 +45,17 @@ public class CharacterAnimator : MonoBehaviour
         anim.SetFloat("Speed", speed);
     }
 
-    public void StopMove()
+    public void MoveAnimator(float speed)
     {
-        anim.SetFloat("Speed", 0f);
+        anim.SetFloat("Speed", speed);
     }
     #endregion
 
     #region 战斗相关 
     public void Attack()
     {
+        if (transform.tag == "Player")
+            Debug.Log("触发攻击动画");
         anim.SetTrigger("IsNormalAttack");
     }
 
@@ -67,8 +69,8 @@ public class CharacterAnimator : MonoBehaviour
     #region 动画事件调用
     public void OnAttackEnd()
     {
-        anim.SetTrigger("Walk");
-        stats.SetState(CharacterState.Idle);
+        //anim.SetTrigger("Walk");
+        stats.SetState(CharacterState.Walk);
     }
 
 

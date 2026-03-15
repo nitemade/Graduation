@@ -18,6 +18,7 @@ public class AIStateMachine : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
 
     private Transform currentTarget = null;
+    private bool hasDied = false;
 
     private void Awake()
     {
@@ -35,10 +36,13 @@ public class AIStateMachine : MonoBehaviour
     {
         if (stats.IsDead)
         {
-            room.EnemyDead();
-            moveController.StopMove();
-            stats.SetState(CharacterState.Dead);
-            enabled = false;
+            if (!hasDied)
+            {
+                hasDied = true;
+                room.EnemyDead();
+                moveController.StopMove();
+                enabled = false;
+            }
             return;
         }
 
@@ -47,7 +51,7 @@ public class AIStateMachine : MonoBehaviour
         if (currentTarget == null)
         {
             stats.SetState(CharacterState.Idle);
-            moveController.StopMove();
+            //moveController.StopMove();
             return;
         }
 

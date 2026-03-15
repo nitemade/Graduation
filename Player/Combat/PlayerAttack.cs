@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(CombatController))]
 public class PlayerAttack : MonoBehaviour
 {
-    //获取角色数据
+
     private CombatController combatController;
 
 
@@ -31,8 +31,6 @@ public class PlayerAttack : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             combatController.RequestAttack();
-        }
-
-       
+        }               
     }
 }
