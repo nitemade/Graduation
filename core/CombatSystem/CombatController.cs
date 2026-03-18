@@ -112,8 +112,6 @@ public class CombatController : MonoBehaviour
     {
         if (!CanAttack()) return false;
         stats.SetState(CharacterState.Attack);
-        if (transform.tag == "Player")
-            Debug.Log("普通攻击判定成功");
         animator.Attack();
         attackCooldown = stats.Cooldown;
         return true;
@@ -126,8 +124,6 @@ public class CombatController : MonoBehaviour
     //动画事件回调，开始攻击判定
     internal void PerformAttack()
     {
-        if (transform.tag == "Player")
-            Debug.Log("攻击回调");
         attackController.NormalAttack();
     }
     #endregion

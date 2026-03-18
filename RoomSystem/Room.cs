@@ -10,6 +10,28 @@ public class Room : MonoBehaviour
     protected HashSet<Vector2> doorPoint = new HashSet<Vector2>();
     protected RectInt roomRect;
 
+    public int roomID;
+
+    public bool isCleared;
+    public bool isVisited;
+
+    public virtual void Init(RectInt room, int id)
+    {
+        roomRect = room;
+        roomID = id;
+        isCleared = false;
+        isVisited = false;
+    }
+
+    public virtual void Init(RectInt room, int id, RoomSaveData data)
+    {
+        roomRect = room;
+        roomID = id;
+        isCleared = data.cleared;
+        isVisited = data.visited;
+    }
+
+
     protected void CloseDoors()
     {
         foreach (var p in doorPoint)
@@ -40,10 +62,7 @@ public class Room : MonoBehaviour
         return RoomManager.Instance.GetDoorByPosition(pos);
 
     }
-    public virtual void Init(RectInt room)
-    {
-        roomRect = room;
-    }
+
 
     public virtual void EnemyDead()
     {

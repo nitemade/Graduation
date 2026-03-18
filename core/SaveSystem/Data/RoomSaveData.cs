@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class RoomSaveData
 {
-    public int currentRoomIndex;
-
-    public List<int> clearedRooms = new();
+    public int id;
+    public bool cleared;
+    public bool visited;
 }

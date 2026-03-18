@@ -5,11 +5,10 @@ public class StartRoom : Room
 {
     public CinemachineVirtualCamera vcam;
 
-    public override void Init(RectInt room)
+    private void Start()
     {
-        base.Init(room);
         SpawnPlayer();
-        this.name = "StartRoom";
+        transform.name = "StartRoom";
     }
 
     private void SpawnPlayer()

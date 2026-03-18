@@ -19,5 +19,13 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-   
+    public void SaveGame()
+    {
+        SaveManager.Instance.SaveGame();
+    }
+
+    public void LoadGame()
+    {
+        SaveManager.Instance.LoadGame();
+    }
 }

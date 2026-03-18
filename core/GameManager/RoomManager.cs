@@ -6,6 +6,7 @@ using UnityEngine;
 public class RoomManager : Singleton<RoomManager>
 {
     public Room currentRoom;
+    List<Room> rooms = new List<Room>();
 
     private Dictionary<Vector2, Door> doorPositionMap = new Dictionary<Vector2, Door>();
 
@@ -49,6 +50,7 @@ public class RoomManager : Singleton<RoomManager>
                     obj.AddComponent<Room>();
                 break;
         }
+        rooms.Add(r);
 
         return r;
     }
@@ -56,6 +58,7 @@ public class RoomManager : Singleton<RoomManager>
     public void EnterRoom(Room room)
     {
         currentRoom = room;
+        room.isVisited = true;
 
         Debug.Log("进入房间" + room.name);
     }
@@ -75,8 +78,60 @@ public class RoomManager : Singleton<RoomManager>
          return null;
     }
 
-    public void RoomCleared()
+    public void RoomCleared(Room room)
     {
+        room.isCleared = true;
         EnhancementManager.Instance.ShowEnhancement();
+    }
+
+    public void ResetRooms()
+    {
+        rooms.Clear();
+        doorPositionMap.Clear();
+        currentRoom = null;
+    }
+
+    public List<RoomSaveData> GetRoomSaveData()
+    {
+        List<RoomSaveData> list = new List<RoomSaveData>();
+
+        foreach (var r in rooms)
+        {
+            list.Add(new RoomSaveData
+            {
+                id = r.roomID,
+                cleared = r.isCleared,
+                visited = r.isVisited
+            });
+        }
+
+        return list;
+    }
+
+    public void ApplySaveData(DungeonSaveData data)
+    {
+
+        if (data == null) return;
+        foreach (var save in data.rooms)
+        {
+            Room r = rooms.Find(x => x.roomID == save.id);
+
+            if (r == null) continue;
+
+            r.isCleared = save.cleared;
+            r.isVisited = save.visited;
+        }
+    }
+
+    public void SetCurrentRoom(int id)
+    {
+        foreach (var r in rooms)
+        {
+            if (r.roomID == id)
+            {
+                currentRoom = r;
+                break;
+            }
+        }
     }
 }

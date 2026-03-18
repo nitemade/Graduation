@@ -19,10 +19,6 @@ public class DungeonGenerator : MonoBehaviour
     public Tilemap wallTilemap;
     public TileBase wallTile;
 
-    private GameObject roomPrefab;
-    private GameObject doorPrefab;
-    private GameObject playerPrefab;
-
     public CinemachineVirtualCamera virtualCamera;
 
 
@@ -42,9 +38,6 @@ public class DungeonGenerator : MonoBehaviour
     private void Awake()
     {
 
-        roomPrefab = Resources.Load<GameObject>("Prefabs/Room/Room");
-        doorPrefab = Resources.Load<GameObject>("Prefabs/Room/Door");
-        playerPrefab = Resources.Load<GameObject>("Prefabs/Players/Soldier");
     }
 
     public void Generate(int seed)
@@ -59,6 +52,26 @@ public class DungeonGenerator : MonoBehaviour
         {
             GridGraph gridGraph = AstarPath.active.data.gridGraph;
             gridGraph.SetDimensions(mapWidth, mapHeight,1);
+            gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
+            AstarPath.active.Scan();
+            Debug.Log("网格创建成功");
+        }
+
+        BuildTiles();
+    }
+
+    public void Generate(DungeonSaveData data)
+    {
+        Random.InitState(data.seed);
+
+        GenerateBSP();
+
+        CreateRoomObjects(data);
+
+        if (AstarPath.active != null)
+        {
+            GridGraph gridGraph = AstarPath.active.data.gridGraph;
+            gridGraph.SetDimensions(mapWidth, mapHeight, 1);
             gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
             AstarPath.active.Scan();
             Debug.Log("网格创建成功");
@@ -180,7 +193,65 @@ public class DungeonGenerator : MonoBehaviour
                     col.size = new Vector2Int(r.width, r.height);
 
                     Room rc = RoomManager.Instance.CreateRoom(roomObj, leaf.roomType);
-                    rc.Init(r);
+                    int id = leafIndex[leaf];
+                    rc.Init(r,id);
+
+                    if (leaf.doors.Count == 0)
+                        return;
+
+                    foreach (var door in leaf.doors)
+                    {
+                        Vector3 doorPos = new Vector3(door.x, door.y, 0);
+
+                        PoolManager.Instance.Spawn(AddressConst.DOOR, doorPos, Quaternion.identity, null,
+                            (doorOdj) =>
+                            {
+                                doorOdj.name = "Door";
+                                doorOdj.layer = LayerMask.NameToLayer("Door");
+                                doorOdj.tag = "Door";
+
+                                RoomManager.Instance.AddDoor(doorOdj.GetComponent<Door>());
+
+                                rc.AddDoor(door);
+                                doorOdj.SetActive(false);
+                            });
+                    }
+                }
+                );
+        }
+    }
+
+    private void CreateRoomObjects(DungeonSaveData data)
+    {
+        foreach (var leaf in leaves)
+        {
+
+            RectInt r = leaf.room;
+
+            Vector3 roomPos =
+                new Vector3(
+                    r.x + r.width / 2f,
+                    r.y + r.height / 2f,
+                    0
+                );
+
+            PoolManager.Instance.Spawn(AddressConst.ROOM, roomPos, Quaternion.identity, null,
+                (roomObj) =>
+                {
+
+                    if (roomObj == null)
+                    {
+                        Debug.LogError($"房间实例化失败！地址：{AddressConst.ROOM}，位置：{roomPos}");
+                        return;
+                    }
+                    roomObj.name = "Room";
+
+                    BoxCollider2D col = roomObj.GetComponent<BoxCollider2D>();
+                    col.size = new Vector2Int(r.width, r.height);
+                    int id = leafIndex[leaf];
+                    Room rc = RoomManager.Instance.CreateRoom(roomObj, leaf.roomType);
+
+                    rc.Init(r, id, data.rooms[id]);
 
                     if (leaf.doors.Count == 0)
                         return;

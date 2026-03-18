@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NormalRoom : Room
 {
-    private GameObject enemyPrefab;
 
     private bool spawned = false;
 
@@ -17,13 +16,12 @@ public class NormalRoom : Room
 
     private void Awake()
     {
-        enemyPrefab = Resources.Load<GameObject>("Prefabs/Enemies/Orc");
-        this.name = "NormalRoom";
+        transform.name = "NormalRoom";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && !spawned)
+        if (collision.CompareTag("Player") && !spawned && !isCleared && !isVisited)
         {
             spawned = true;
 
@@ -75,7 +73,8 @@ public class NormalRoom : Room
         {
             OpenDoors();
             //todo: 通知房间已清空(未实现)
-            RoomManager.Instance.RoomCleared();
+            isCleared = true;
+            RoomManager.Instance.RoomCleared(this);
         }
     }
 }

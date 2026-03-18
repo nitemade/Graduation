@@ -20,8 +20,6 @@ public class AttackController : MonoBehaviour
 
     public void NormalAttack()
     {
-        if (transform.tag == "Player")
-            Debug.Log("攻击判定开始");
         lastMoveDir.x = anim.GetFloat("LookX");
         lastMoveDir.y = anim.GetFloat("LookY");
         Vector2 attackPos = (Vector2)transform.position + lastMoveDir * stats.NormalAttackRange;
@@ -40,8 +38,6 @@ public class AttackController : MonoBehaviour
             IAttackable target = hit.GetComponent<IAttackable>();
             if (target != null)
             {
-                if (transform.tag == "Player")
-                    Debug.Log("造成一次伤害");
                 target.TakeDamage(stats.NormalDamage);
             }
         }

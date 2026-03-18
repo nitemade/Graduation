@@ -11,7 +11,6 @@ public class CharacterAnimator : MonoBehaviour
     private Animator anim;
     private CharacterStats stats;
     private CombatController combatController;
-    private AIStateMachine AIStateMachine;
 
 
     private void Awake()
@@ -24,7 +23,6 @@ public class CharacterAnimator : MonoBehaviour
         anim = GetComponent<Animator>();
         stats = GetComponent<CharacterStats>();
         combatController = GetComponent<CombatController>();
-        AIStateMachine = GetComponent<AIStateMachine>();
 
     }
 
@@ -54,8 +52,6 @@ public class CharacterAnimator : MonoBehaviour
     #region 战斗相关 
     public void Attack()
     {
-        if (transform.tag == "Player")
-            Debug.Log("触发攻击动画");
         anim.SetTrigger("IsNormalAttack");
     }
 
