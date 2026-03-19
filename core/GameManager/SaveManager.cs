@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ public class SaveManager : Singleton<SaveManager>
         // ===== 收集各系统数据 =====
 
         file.dungeon = DungeonManager.Instance.GetSaveData();
+        file.player = PlayerManager.Instance.GetSaveData();
 
         string json = JsonUtility.ToJson(file, true);
 
@@ -47,10 +49,15 @@ public class SaveManager : Singleton<SaveManager>
 
         // ===== 加载各系统 =====
 
-        DungeonManager.Instance.LoadSaveData(
-            file.dungeon
-        );
+        DungeonManager.Instance.LoadSaveData(file.dungeon);
+        StartCoroutine(LoadPlayer(file));
 
         Debug.Log("读取成功");
+    }
+    IEnumerator LoadPlayer(SaveFileData file)
+    {
+        yield return null;
+
+        PlayerManager.Instance.LoadSaveData(file.player);
     }
 }

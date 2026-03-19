@@ -4,4 +4,5 @@ using System;
 public class SaveFileData
 {
     public DungeonSaveData dungeon;
+    public PlayerSaveData player;
 }

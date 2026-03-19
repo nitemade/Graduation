@@ -9,6 +9,9 @@ public class StartRoom : Room
     {
         SpawnPlayer();
         transform.name = "StartRoom";
+
+        isVisited = true;
+        isCleared = true;
     }
 
     private void SpawnPlayer()
@@ -31,6 +34,8 @@ public class StartRoom : Room
                 playerOjb.tag = "Player";
 
                 vcam.Follow = playerOjb.transform;
+                if (isCleared && isVisited)
+                    PlayerManager.Instance.RegisterPlayer(playerOjb.GetComponent<PlayerController>());
             });
     }
 }

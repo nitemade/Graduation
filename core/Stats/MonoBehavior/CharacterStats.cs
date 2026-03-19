@@ -171,4 +171,14 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     public bool IsDead => currentState == CharacterState.Dead;
     #endregion
+
+    public void SetHealth(float value)
+    {
+        currentHealth = Mathf.Clamp(value, 0, MaxHealth);
+    }
+
+    public void SetMana(float value)
+    {
+        currentMana = Mathf.Clamp(value, 0, MaxMana);
+    }
 }

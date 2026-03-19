@@ -48,6 +48,7 @@ public class DungeonManager : Singleton<DungeonManager>, ISaveable<DungeonSaveDa
         Generate(data);
 
         StartCoroutine(LoadRoomState(data));
+
     }
 
     IEnumerator LoadRoomState(DungeonSaveData data)

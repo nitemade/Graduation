@@ -1,25 +1,49 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class EnhancementRuntimeData
 {
-    public Dictionary<string, int> stacks = new Dictionary<string, int>();
+    [Serializable]
+    public class StackData
+    {
+        public string id;
+        public int count;
+    }
+
+    public List<StackData> stacks = new List<StackData>();
+
 
     public int GetStack(string id)
     {
-        if (stacks.TryGetValue(id, out int v))
-            return v;
-        return 0;
+        var s = stacks.Find(x => x.id == id);
+        return s == null ? 0 : s.count;
     }
+
 
     public void AddStack(string id)
     {
-        if (!stacks.ContainsKey(id))
-            stacks[id] = 0;
+        var s = stacks.Find(x => x.id == id);
 
-        stacks[id]++;
+        if (s == null)
+        {
+            s = new StackData();
+            s.id = id;
+            s.count = 0;
+            stacks.Add(s);
+        }
+
+        s.count++;
+    }
+
+    public List<StackData> GetAll()
+    {
+        return stacks;
+    }
+
+    public void SetAll(List<StackData> list)
+    {
+        stacks = list;
     }
 }
