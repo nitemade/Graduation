@@ -32,7 +32,7 @@ public class EnhancementPanelUI : MonoBehaviour
 
     void OnSelectEnhancement(Enhancement_SO e)
     {
-        EnhancementManager.Instance.ApplyEnhancement(e);
+        EnhancementManager.Instance.AddEnhancement(e);
 
         Close();
     }

@@ -96,9 +96,9 @@ public class EnhancementManager : Singleton<EnhancementManager>
         return null;
     }
 
-    public void ApplyEnhancement(Enhancement_SO e)
+    public void AddEnhancement(Enhancement_SO e)
     {
-        playerStats.ApplyEnhancement(e);
+        EnhancementEventBus.RaiseEnhancementAdded(e);
     }
 
     public void ShowEnhancement()
@@ -107,5 +107,25 @@ public class EnhancementManager : Singleton<EnhancementManager>
         var list = GetEnhancements(3);
 
         panel.Show(list);
+    }
+
+    public void RebuildEnhancements(
+List<EnhancementRuntimeData.StackData> stacks)
+    {
+        foreach (var s in stacks)
+        {
+            int id = int.Parse(s.id);
+            Enhancement_SO e = pool.GetByID(id);
+
+            if (e == null) continue;
+
+            int count = s.count; // ?»º´æ
+
+            for (int i = 0; i < count; i++)
+            {
+                Debug.Log(i + "   " + count);
+                EnhancementEventBus.RaiseEnhancementAdded(e);
+            }
+        }
     }
 }

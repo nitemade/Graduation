@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MenuManager : Singleton<GameManager>
 {
+    public GameObject statPanel;
     public GameObject mainMenu;
     private bool isPaused = true;
     public void StartGame()
@@ -11,6 +12,7 @@ public class MenuManager : Singleton<GameManager>
         GameManager.Instance.StartGame();
         isPaused = false;
         mainMenu.SetActive(false);
+        statPanel.SetActive(true);
     }
 
     public void SaveGame()
@@ -23,6 +25,7 @@ public class MenuManager : Singleton<GameManager>
         GameManager.Instance.LoadGame();
         isPaused = false;
         mainMenu.SetActive(false);
+        statPanel.SetActive(true);
     }
 
 
@@ -33,11 +36,13 @@ public class MenuManager : Singleton<GameManager>
             if (isPaused)
             {
                 mainMenu.SetActive(false);
+                statPanel.SetActive(true);
                 isPaused = false;
             }
             else
             {
                 mainMenu.SetActive(true);
+                statPanel.SetActive(false);
                 isPaused = true;
             }
         }
@@ -46,5 +51,6 @@ public class MenuManager : Singleton<GameManager>
     public void ShowMenu()
     {
         mainMenu.SetActive(true);
+        statPanel.SetActive(false);
     }
 }

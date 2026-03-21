@@ -9,6 +9,8 @@ public class PlayerManager :
     private CharacterStats stats;
     private PlayerSaveData data;
 
+    public PlayerController Player => player; 
+    public CharacterStats PlayerStats => stats;
     public void RegisterPlayer(PlayerController p)
     {
         player = p;
@@ -61,7 +63,12 @@ public class PlayerManager :
         runtime.baseStats = data.baseStats;
         runtime.bonusStats = data.bonusStats;
 
+        stats.ResetBonusStats();// TODO:ÖØÖÃ×´Ì¬
+
+
         runtime.enhancementData.SetAll(data.enhancements);
+
+        EnhancementManager.Instance.RebuildEnhancements(data.enhancements);
 
         runtime.Recalculate();
 

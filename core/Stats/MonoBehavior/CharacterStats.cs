@@ -43,6 +43,21 @@ public class CharacterStats : MonoBehaviour,IAttackable
     public event Action<float> OnDamage;
     public event Action OnDead;
 
+
+    private void OnEnable()
+    {
+        EnhancementEventBus.OnEnhancementAdded += OnEnhancementAdded;
+    }
+
+    private void OnDisable()
+    {
+        EnhancementEventBus.OnEnhancementAdded -= OnEnhancementAdded;
+    }
+
+    void OnEnhancementAdded(Enhancement_SO e)
+    {
+        ApplyEnhancementInternal(e);
+    }
     #endregion
 
     #region 初始化
@@ -63,7 +78,15 @@ public class CharacterStats : MonoBehaviour,IAttackable
         currentMana = MaxMana;
         currentSpeed = Speed;
         if (transform.tag == "Player")
+        {
             EnhancementManager.Instance.Init(this);
+            runtimeData.Recalculate();
+
+            CharacterStatEventBus.RaiseStatsChanged(this);
+        }
+
+
+
     }
     #endregion
 
@@ -85,6 +108,7 @@ public class CharacterStats : MonoBehaviour,IAttackable
         
         ChangeHealth(-finalDamage);
         //TODO: 可触发事件
+        CharacterStatEventBus.RaiseStatsChanged(this);
 
         OnDamage?.Invoke(finalDamage);
 
@@ -115,7 +139,7 @@ public class CharacterStats : MonoBehaviour,IAttackable
     #region 升级/buff 
     //TODO: 升级
 
-    public void ApplyEnhancement(Enhancement_SO e)
+    void ApplyEnhancementInternal(Enhancement_SO e)
     {
         runtimeData.enhancementData.AddStack(e.id.ToString());
 
@@ -125,6 +149,8 @@ public class CharacterStats : MonoBehaviour,IAttackable
         }
 
         runtimeData.Recalculate();
+
+        CharacterStatEventBus.RaiseStatsChanged(this);
     }
     void ApplyModifier(StatModifier mod)
     {
@@ -175,10 +201,19 @@ public class CharacterStats : MonoBehaviour,IAttackable
     public void SetHealth(float value)
     {
         currentHealth = Mathf.Clamp(value, 0, MaxHealth);
+
+        CharacterStatEventBus.RaiseStatsChanged(this);
     }
 
     public void SetMana(float value)
     {
         currentMana = Mathf.Clamp(value, 0, MaxMana);
+
+        CharacterStatEventBus.RaiseStatsChanged(this);
+    }
+
+    public void ResetBonusStats()
+    {
+        runtimeData.bonusStats = new CharacterStatBlock();
     }
 }

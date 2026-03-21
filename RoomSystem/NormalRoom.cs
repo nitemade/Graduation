@@ -21,7 +21,8 @@ public class NormalRoom : Room
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && !spawned && !isCleared && !isVisited)
+        isVisited = true;
+        if (collision.CompareTag("Player") && !spawned && !isCleared)
         {
             spawned = true;
 
