@@ -11,6 +11,8 @@ public class PlayerManager :
 
     public PlayerController Player => player; 
     public CharacterStats PlayerStats => stats;
+
+    public System.Action<CharacterStats> OnPlayerRegistered;
     public void RegisterPlayer(PlayerController p)
     {
         player = p;
@@ -18,6 +20,8 @@ public class PlayerManager :
 
         if (data != null)
             Load();
+
+        OnPlayerRegistered?.Invoke(stats);
     }
 
     public PlayerSaveData GetSaveData()

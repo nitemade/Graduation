@@ -36,6 +36,7 @@ public class StartRoom : Room
                 vcam.Follow = playerOjb.transform;
                 if (isCleared && isVisited)
                     PlayerManager.Instance.RegisterPlayer(playerOjb.GetComponent<PlayerController>());
+                MenuManager.Instance.statPanel.SetActive(true);
             });
     }
 }

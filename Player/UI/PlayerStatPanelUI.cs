@@ -11,6 +11,8 @@ public class PlayerStatPanelUI : MonoBehaviour
     public TMP_Text defenseText;
     public TMP_Text atkSpeedText;
 
+
+
     private void OnEnable()
     {
         CharacterStatEventBus.OnStatsChanged += OnStatsChanged;
@@ -28,8 +30,6 @@ public class PlayerStatPanelUI : MonoBehaviour
 
         if (stats == null)
         {
-            //todo: show error
-            Debug.LogError("PlayerStats is null");
             return;
         }
 
@@ -45,15 +45,6 @@ public class PlayerStatPanelUI : MonoBehaviour
 
         if (stats != PlayerManager.Instance.PlayerStats)
         {
-            if (stats == null)
-            {
-                Debug.LogError("stats is null");
-            }
-
-            if (PlayerManager.Instance.PlayerStats == null)
-            {
-                Debug.LogError("OnStatsChanged:PlayerStats is null");
-            }
             return;
         }
         UpdateUI(stats);
@@ -61,11 +52,8 @@ public class PlayerStatPanelUI : MonoBehaviour
 
     void UpdateUI(CharacterStats stats)
     {
-        //todo: Debug
-        Debug.Log("¸üÐÂUI:" + stats.tag.ToString() + "  :  :  " + stats.CurrentHealth.ToString());
         hpText.text =
             $"{stats.CurrentHealth} / {stats.MaxHealth}";
-        Debug.Log(hpText.text.ToString());
 
         manaText.text =
             $"{stats.CurrentMana} / {stats.MaxMana}";

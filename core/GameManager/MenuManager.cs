@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MenuManager : Singleton<GameManager>
+public class MenuManager : Singleton<MenuManager>
 {
     public GameObject statPanel;
     public GameObject mainMenu;
@@ -12,7 +12,6 @@ public class MenuManager : Singleton<GameManager>
         GameManager.Instance.StartGame();
         isPaused = false;
         mainMenu.SetActive(false);
-        statPanel.SetActive(true);
     }
 
     public void SaveGame()

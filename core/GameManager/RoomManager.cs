@@ -134,4 +134,6 @@ public class RoomManager : Singleton<RoomManager>
             }
         }
     }
+
+    public IReadOnlyList<Room> Rooms => rooms;
 }
