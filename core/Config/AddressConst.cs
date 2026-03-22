@@ -7,4 +7,7 @@ public static class AddressConst
     public const string SOLDIER = "Soldier";
 
     public const string CARD = "Card";
+
+    public const string MINIMAP_ROOM = "MinimapRoomUI";
+    public const string MINIMAP_DOOR = "MinimapDoorUI";
 }

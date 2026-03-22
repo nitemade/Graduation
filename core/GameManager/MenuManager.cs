@@ -6,6 +6,7 @@ public class MenuManager : Singleton<MenuManager>
 {
     public GameObject statPanel;
     public GameObject mainMenu;
+    public GameObject MinimapPanel;
     private bool isPaused = true;
     public void StartGame()
     {
@@ -22,9 +23,7 @@ public class MenuManager : Singleton<MenuManager>
     public void LoadGame()
     {
         GameManager.Instance.LoadGame();
-        isPaused = false;
-        mainMenu.SetActive(false);
-        statPanel.SetActive(true);
+        HideMenu();
     }
 
 
@@ -34,22 +33,28 @@ public class MenuManager : Singleton<MenuManager>
         {
             if (isPaused)
             {
-                mainMenu.SetActive(false);
-                statPanel.SetActive(true);
-                isPaused = false;
+                HideMenu();
             }
             else
             {
-                mainMenu.SetActive(true);
-                statPanel.SetActive(false);
-                isPaused = true;
+                ShowMenu();
             }
         }
     }
 
     public void ShowMenu()
     {
+        isPaused = true;
         mainMenu.SetActive(true);
         statPanel.SetActive(false);
+        MinimapPanel.SetActive(false);
+    }
+
+    public void HideMenu()
+    {
+        isPaused = false;
+        mainMenu.SetActive(false);
+        statPanel.SetActive(true);
+        MinimapPanel.SetActive(true);
     }
 }

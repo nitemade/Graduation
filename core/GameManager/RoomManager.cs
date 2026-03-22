@@ -8,6 +8,10 @@ public class RoomManager : Singleton<RoomManager>
     public Room currentRoom;
     List<Room> rooms = new List<Room>();
 
+    public IReadOnlyList<Room> Rooms => rooms;
+
+    public System.Action<Room> OnEnterRoomEvent;
+
     private Dictionary<Vector2, Door> doorPositionMap = new Dictionary<Vector2, Door>();
 
     protected override void Awake()
@@ -59,6 +63,11 @@ public class RoomManager : Singleton<RoomManager>
     {
         currentRoom = room;
         room.isVisited = true;
+
+        MinimapManager.Instance.ShowRoom(room);
+
+        OnEnterRoomEvent?.Invoke(room);
+
 
         Debug.Log("进入房间" + room.name);
     }
@@ -134,6 +143,4 @@ public class RoomManager : Singleton<RoomManager>
             }
         }
     }
-
-    public IReadOnlyList<Room> Rooms => rooms;
 }

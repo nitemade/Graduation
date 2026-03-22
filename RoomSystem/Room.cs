@@ -31,6 +31,14 @@ public class Room : MonoBehaviour
         isVisited = data.visited;
     }
 
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            isVisited = true;
+            RoomManager.Instance.EnterRoom(this);
+        }
+    }
 
     protected void CloseDoors()
     {

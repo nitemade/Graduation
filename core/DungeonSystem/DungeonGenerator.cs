@@ -196,6 +196,8 @@ public class DungeonGenerator : MonoBehaviour
                     int id = leafIndex[leaf];
                     rc.Init(r,id);
 
+                    MinimapManager.Instance.RegisterRoom(rc, r, leaf.roomType, leaf.doors);
+
                     if (leaf.doors.Count == 0)
                         return;
 
@@ -252,6 +254,8 @@ public class DungeonGenerator : MonoBehaviour
                     Room rc = RoomManager.Instance.CreateRoom(roomObj, leaf.roomType);
 
                     rc.Init(r, id, data.rooms[id]);
+
+                    MinimapManager.Instance.RegisterRoom(rc, r, leaf.roomType, leaf.doors);
 
                     if (leaf.doors.Count == 0)
                         return;

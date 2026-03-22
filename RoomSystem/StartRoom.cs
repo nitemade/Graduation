@@ -9,9 +9,15 @@ public class StartRoom : Room
     {
         SpawnPlayer();
         transform.name = "StartRoom";
+    }
 
-        isVisited = true;
-        isCleared = true;
+    protected override void OnTriggerEnter2D(Collider2D collision)
+    {
+        base.OnTriggerEnter2D(collision);
+        if (collision.CompareTag("Player"))
+        {
+            isCleared = true;
+        }
     }
 
     private void SpawnPlayer()
@@ -34,9 +40,9 @@ public class StartRoom : Room
                 playerOjb.tag = "Player";
 
                 vcam.Follow = playerOjb.transform;
-                if (isCleared && isVisited)
-                    PlayerManager.Instance.RegisterPlayer(playerOjb.GetComponent<PlayerController>());
+                PlayerManager.Instance.RegisterPlayer(playerOjb.GetComponent<PlayerController>());
                 MenuManager.Instance.statPanel.SetActive(true);
+                MenuManager.Instance.MinimapPanel.SetActive(true);
             });
     }
 }

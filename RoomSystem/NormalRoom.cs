@@ -19,14 +19,12 @@ public class NormalRoom : Room
         transform.name = "NormalRoom";
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        isVisited = true;
+        base.OnTriggerEnter2D(collision);
         if (collision.CompareTag("Player") && !spawned && !isCleared)
         {
             spawned = true;
-
-            RoomManager.Instance.EnterRoom(this);
 
             SpawnEnemies();
 
@@ -73,7 +71,6 @@ public class NormalRoom : Room
         if (enemyCount <= 0)
         {
             OpenDoors();
-            //todo: 通知房间已清空(未实现)
             isCleared = true;
             RoomManager.Instance.RoomCleared(this);
         }
