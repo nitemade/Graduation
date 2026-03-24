@@ -53,11 +53,11 @@ public class NormalRoom : Room
             PoolManager.Instance.Spawn(AddressConst.ORC, spawn, Quaternion.identity, transform,
             (enemy) =>
             {
+                enemy.tag = "Enemy";
                 var ai = enemy.GetComponent<AIStateMachine>();
-
                 ai.Init(this);
-
-                
+                //todo:debug
+                Debug.Log("初始化成功 ");
             });
 
             enemyCount++;

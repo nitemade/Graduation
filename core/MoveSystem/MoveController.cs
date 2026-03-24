@@ -25,12 +25,6 @@ public class MoveController : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
     }
 
-    //private void FixedUpdate()
-    //{
-    //    HandleMovement();
-
-
-    //}
 
     private void HandleMovement()
     {
@@ -49,7 +43,7 @@ public class MoveController : MonoBehaviour
 
         if (moveDir.x != 0)
             sr.flipX = moveDir.x < 0;
-        animator.Move(moveDir.x, moveDir.y,stats.CurrentSpeed);
+        animator.Move(moveDir.x, moveDir.y,rb.velocity.magnitude);
 
     }
 

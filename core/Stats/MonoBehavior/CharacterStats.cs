@@ -46,6 +46,11 @@ public class CharacterStats : MonoBehaviour,IAttackable
 
     private void OnEnable()
     {
+        Init();
+
+        Debug.Log("初始化角色数据" + transform.name);
+        Debug.Log("MaxHealth" + MaxHealth);
+        Debug.Log("CurrentHealth" + CurrentHealth);
         EnhancementEventBus.OnEnhancementAdded += OnEnhancementAdded;
     }
 
@@ -61,14 +66,7 @@ public class CharacterStats : MonoBehaviour,IAttackable
     #endregion
 
     #region 初始化
-    private void Awake()
-    {
-        Init();
 
-        Debug.Log("初始化角色数据" + transform.name);
-        Debug.Log("MaxHealth" + MaxHealth);
-        Debug.Log("CurrentHealth" + CurrentHealth);
-    }
 
     private void Init()
     {
@@ -77,11 +75,12 @@ public class CharacterStats : MonoBehaviour,IAttackable
         currentHealth = MaxHealth;
         currentMana = MaxMana;
         currentSpeed = Speed;
+        currentState = CharacterState.Idle;
         if (transform.tag == "Player")
         {
             EnhancementManager.Instance.Init(this);
+            //ResetBonusStats();
             runtimeData.Recalculate();
-
             CharacterStatEventBus.RaiseStatsChanged(this);
         }
 

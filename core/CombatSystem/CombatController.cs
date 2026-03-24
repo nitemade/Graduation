@@ -25,9 +25,14 @@ public class CombatController : MonoBehaviour
         animator = GetComponent<CharacterAnimator>();
         attackController = GetComponent<AttackController>();
 
-        //¶©ÔÄÊÂ¼þ
+    }
+
+    private void OnEnable()
+    {
         stats.OnDamage += HandleDamage;
         stats.OnDead += HandleDeath;
+
+        ResetState();
     }
 
     private void Update()
@@ -110,7 +115,10 @@ public class CombatController : MonoBehaviour
     #region ÆÕÍ¨¹¥»÷Âß¼­
     public bool RequestAttack()
     {
-        if (!CanAttack()) return false;
+        if (!CanAttack()) 
+        { 
+            return false; 
+        }
         stats.SetState(CharacterState.Attack);
         animator.Attack();
         attackCooldown = stats.Cooldown;
@@ -138,5 +146,18 @@ public class CombatController : MonoBehaviour
             stats.OnDamage -= HandleDamage;
             stats.OnDead -= HandleDeath;
         }
+    }
+
+    void ResetState()
+    {
+        isInvincible = false;
+        isStunned = false;
+        attackCooldown = 0f;
+
+        StopAllCoroutines();
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = true;
     }
 }

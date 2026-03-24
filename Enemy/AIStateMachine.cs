@@ -29,6 +29,11 @@ public class AIStateMachine : MonoBehaviour
     public void Init(Room roomContext)
     {
         room = roomContext; 
+        stats.SetState(CharacterState.Idle);
+        moveController.StopMove();
+        hasDied = false;
+        enabled = true;
+        currentTarget = null;
     }
 
     // Update is called once per frame
@@ -51,7 +56,7 @@ public class AIStateMachine : MonoBehaviour
         if (currentTarget == null)
         {
             stats.SetState(CharacterState.Idle);
-            //moveController.StopMove();
+            moveController.StopMove();
             return;
         }
 
@@ -95,5 +100,11 @@ public class AIStateMachine : MonoBehaviour
         }
     }
 
-
+    public void OnDeath()
+    {
+        PoolManager.Instance.Despawn(
+            AddressConst.ORC,
+            this.gameObject
+        );
+    }
 }

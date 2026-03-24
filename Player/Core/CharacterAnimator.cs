@@ -38,8 +38,12 @@ public class CharacterAnimator : MonoBehaviour
     #region ÒÆ¶¯ 
     public void Move(float x, float y,float speed)
     {
-        anim.SetFloat("LookX", x);
-        anim.SetFloat("LookY", y);
+        if (x != 0 || y != 0)
+        {
+            anim.SetFloat("LookX", x);
+            anim.SetFloat("LookY", y);
+        }
+
         anim.SetFloat("Speed", speed);
     }
 
@@ -77,10 +81,7 @@ public class CharacterAnimator : MonoBehaviour
     }
 
 
-    public void OnDeath()
-    {
-        Destroy(gameObject,2f);
-    }
+
     #endregion
 
 

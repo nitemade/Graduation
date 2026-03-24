@@ -40,8 +40,7 @@ public class PlayerManager :
         data.baseStats = runtime.baseStats;
         data.bonusStats = runtime.bonusStats;
 
-        data.enhancements =
-            runtime.enhancementData.GetAll();
+        data.enhancements = runtime.enhancementData.GetAll();
 
         return data;
     }
@@ -78,5 +77,12 @@ public class PlayerManager :
 
         stats.SetHealth(data.currentHealth);
         stats.SetMana(data.currentMana);
+
+        data = null;
+    }
+
+    public void Clear()
+    {
+        player = null;
     }
 }

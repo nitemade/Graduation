@@ -47,17 +47,22 @@ public class DungeonGenerator : MonoBehaviour
         GenerateBSP();
 
         CreateRoomObjects();
-
-        if (AstarPath.active != null)
-        {
-            GridGraph gridGraph = AstarPath.active.data.gridGraph;
-            gridGraph.SetDimensions(mapWidth, mapHeight,1);
-            gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
-            AstarPath.active.Scan();
-            Debug.Log("网格创建成功");
-        }
-
         BuildTiles();
+
+        StartCoroutine(ScanAfterFullUpdate());
+        //if (AstarPath.active != null)
+        //{
+        //    GridGraph gridGraph = AstarPath.active.data.gridGraph;
+        //    gridGraph.SetDimensions(mapWidth, mapHeight,1);
+        //    gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
+
+        //    Physics2D.SyncTransforms();
+
+        //    AstarPath.active.Scan();
+        //    Debug.Log("网格创建成功");
+        //}
+
+
     }
 
     public void Generate(DungeonSaveData data)
@@ -67,17 +72,31 @@ public class DungeonGenerator : MonoBehaviour
         GenerateBSP();
 
         CreateRoomObjects(data);
+        BuildTiles();
+
+        StartCoroutine(ScanAfterFullUpdate());
+
+    }
+
+    private IEnumerator ScanAfterFullUpdate()
+    {
+        // 等待 2 帧，给物理引擎足够时间更新碰撞体
+        yield return null; // 第 1 帧：物体生成/销毁完成
+        yield return null; // 第 2 帧：物理碰撞体完全注册
+
+        // 强制同步物理变换
+        Physics.SyncTransforms();
+        Physics2D.SyncTransforms(); // 2D 项目必须加这行！！！
 
         if (AstarPath.active != null)
         {
             GridGraph gridGraph = AstarPath.active.data.gridGraph;
             gridGraph.SetDimensions(mapWidth, mapHeight, 1);
             gridGraph.center = new Vector3(mapWidth / 2f, mapHeight / 2f, 0);
+
             AstarPath.active.Scan();
             Debug.Log("网格创建成功");
         }
-
-        BuildTiles();
     }
 
     private void BuildTiles()
@@ -522,87 +541,91 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-
-    private void OnDrawGizmos()
-    {
-        if (leaves == null) return;
-
-
-
-        foreach (var leaf in leaves)
-        {
-            //绘制空间
-            Gizmos.color = Color.green;
-            RectInt r = leaf.rect;
-
-            Vector3 pos = new Vector3(
-                r.x + r.width / 2f,
-                r.y + r.height / 2f,
-                0
-            );
-
-            Vector3 size = new Vector3(r.width, r.height, 1);
-
-            Gizmos.DrawWireCube(pos, size);
-
-
-            //绘制房间
-            RectInt room = leaf.room;
-
-            Gizmos.color = GetRoomColor(leaf.roomType);
-            Vector3 roomPos = new Vector3(
-                room.x + room.width / 2f,
-                room.y + room.height / 2f,
-                0);
-
-            Vector3 roomsize = new Vector3(room.width, room.height, 1);
-
-            Gizmos.DrawWireCube(roomPos, roomsize);
+    /// <summary>
+    /// 调试绘制空间
+    /// </summary>
+    /// <param name="form"></param>
+    /// <param name="to"></param>
+    //private void OnDrawGizmos()
+    //{
+    //    if (leaves == null) return;
 
 
 
-        }
+    //    foreach (var leaf in leaves)
+    //    {
+    //        //绘制空间
+    //        Gizmos.color = Color.green;
+    //        RectInt r = leaf.rect;
 
-        //绘制边
-        Gizmos.color = Color.red;
+    //        Vector3 pos = new Vector3(
+    //            r.x + r.width / 2f,
+    //            r.y + r.height / 2f,
+    //            0
+    //        );
 
-        foreach (var edge in edges)
-        {
-            Gizmos.DrawLine(
-                new Vector3(edge.a.x, edge.a.y, 0),
-                new Vector3(edge.b.x, edge.b.y, 0));
-        }
+    //        Vector3 size = new Vector3(r.width, r.height, 1);
 
-        //绘制走廊
-        Gizmos.color = Color.white;
+    //        Gizmos.DrawWireCube(pos, size);
 
-        foreach (var corridor in corridors)
-        {
-            Gizmos.DrawCube(
-                new Vector3(corridor.x, corridor.y, 0),
-                Vector3.one * 0.5f);
+
+    //        //绘制房间
+    //        RectInt room = leaf.room;
+
+    //        Gizmos.color = GetRoomColor(leaf.roomType);
+    //        Vector3 roomPos = new Vector3(
+    //            room.x + room.width / 2f,
+    //            room.y + room.height / 2f,
+    //            0);
+
+    //        Vector3 roomsize = new Vector3(room.width, room.height, 1);
+
+    //        Gizmos.DrawWireCube(roomPos, roomsize);
+
+
+
+    //    }
+
+    //    //绘制边
+    //    Gizmos.color = Color.red;
+
+    //    foreach (var edge in edges)
+    //    {
+    //        Gizmos.DrawLine(
+    //            new Vector3(edge.a.x, edge.a.y, 0),
+    //            new Vector3(edge.b.x, edge.b.y, 0));
+    //    }
+
+    //    //绘制走廊
+    //    Gizmos.color = Color.white;
+
+    //    foreach (var corridor in corridors)
+    //    {
+    //        Gizmos.DrawCube(
+    //            new Vector3(corridor.x, corridor.y, 0),
+    //            Vector3.one * 0.5f);
                 
-        }
-    }
+    //    }
+    //}
 
-    Color GetRoomColor(RoomType t)
-    {
-        switch (t)
-        {
-            case RoomType.Start:
-                return Color.blue;
-            case RoomType.Normal:
-                return Color.white;
-            case RoomType.Boss:
-                return Color.red;
-            case RoomType.Shop:
-                return Color.green;
-            case RoomType.Treasure:
-                return Color.cyan;
-            default:
-                return Color.yellow;
-        }
-    }
+    //Color GetRoomColor(RoomType t)
+    //{
+    //    switch (t)
+    //    {
+    //        case RoomType.Start:
+    //            return Color.blue;
+    //        case RoomType.Normal:
+    //            return Color.white;
+    //        case RoomType.Boss:
+    //            return Color.red;
+    //        case RoomType.Shop:
+    //            return Color.green;
+    //        case RoomType.Treasure:
+    //            return Color.cyan;
+    //        default:
+    //            return Color.yellow;
+    //    }
+    //}
 
     void DrawLine(Vector2Int form, Vector2Int to)
     {
@@ -688,5 +711,63 @@ public class DungeonGenerator : MonoBehaviour
         }
 
         return mst;
+    }
+
+    public void ClearDungeon()
+    {
+
+        ClearCharacters();
+
+
+        floorTilemap.ClearAllTiles();
+        wallTilemap.ClearAllTiles();
+
+        leaves.Clear();
+        edges.Clear();
+        corridors.Clear();
+        floor.Clear();
+        wall.Clear();
+        doors.Clear();
+        leafIndex.Clear();
+
+        root = null;
+
+        RoomManager.Instance.ResetRooms();
+
+        MinimapManager.Instance.Clear();
+
+        PoolManager.Instance.ReleaseAllActive(AddressConst.ROOM);
+        PoolManager.Instance.ReleaseAllActive(AddressConst.DOOR);
+
+        PlayerManager.Instance.Clear();
+    }
+
+    void ClearCharacters()
+    {
+        GameObject[] players =
+            GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (var p in players)
+        {
+            PoolManager.Instance.Despawn(
+                AddressConst.SOLDIER,
+                p
+            );
+        }
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        Debug.Log("=====================================================");
+        Debug.Log("enemies:" + enemies.Length);
+        foreach (var e in enemies)
+        {
+            //todo:debug
+            Debug.Log(e.name);
+            PoolManager.Instance.Despawn(
+                AddressConst.ORC,
+                e
+            );
+        }
+        Debug.Log("=====================================================");
+
     }
 }

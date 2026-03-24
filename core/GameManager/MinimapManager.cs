@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MinimapManager : Singleton<MinimapManager>
@@ -98,5 +98,22 @@ public class MinimapManager : Singleton<MinimapManager>
             foreach (var d in doorMap[room.roomID])
                 d.SetActive(true);
         }
+    }
+
+    public void Clear()
+    {
+
+        int count = 0;
+
+        foreach (Transform child in mapRoot)
+        {
+            count++;
+
+
+            Destroy(child.gameObject);
+        }
+
+        map.Clear();
+        doorMap.Clear();
     }
 }

@@ -28,9 +28,14 @@ public class PlayerAttack : MonoBehaviour
 
     private void NormalAttack()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !MenuManager.Instance.IsPaused)
         {
             combatController.RequestAttack();
         }               
     }
+    public void OnDeath()
+    {
+        PoolManager.Instance.Despawn(AddressConst.SOLDIER, this.gameObject);
+    }
+
 }

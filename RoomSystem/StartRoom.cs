@@ -41,8 +41,7 @@ public class StartRoom : Room
 
                 vcam.Follow = playerOjb.transform;
                 PlayerManager.Instance.RegisterPlayer(playerOjb.GetComponent<PlayerController>());
-                MenuManager.Instance.statPanel.SetActive(true);
-                MenuManager.Instance.MinimapPanel.SetActive(true);
+                MenuManager.Instance.HideMenu();
             });
     }
 }

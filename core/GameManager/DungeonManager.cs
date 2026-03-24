@@ -15,16 +15,26 @@ public class DungeonManager : Singleton<DungeonManager>, ISaveable<DungeonSaveDa
 
     public void Generate(int seed)
     {
-        RoomManager.Instance.ResetRooms();
+
+        generator.ClearDungeon();
+
         this.seed = seed;
+
         generator.Generate(seed);
+        RoomManager.Instance.ResetRooms();
+
     }
 
     public void Generate(DungeonSaveData data)
     {
-        RoomManager.Instance.ResetRooms();
+
+        generator.ClearDungeon();
+
         this.seed = data.seed;
+
         generator.Generate(data);
+        RoomManager.Instance.ResetRooms();
+
     }
 
 
